@@ -1,10 +1,10 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import Login from "../pages/login";
+import Login from "./login.js";
 
 export default function Home() {
   return (
-    <div>
+    <div className='main'>
       <Head>
         <title>Task Manager - Login</title>
         <link rel="icon" href="/favicon.ico" />
@@ -15,8 +15,13 @@ export default function Home() {
       </div>
       <Login />
       <style jsx>{`
+        .main {
+          height: 100vh;
+          background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+          overflow: hidden;
+        }
+
         .topbar {
-          background-color: #ccc;
           height: 4em;
           display: flex;
           justify-content: space-between;

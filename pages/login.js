@@ -5,13 +5,31 @@ export default function login() {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(false);
+  const [route, setRoute]  = useState("./");
+  const [isError, setIsError] = useState(false);
   
-
   const handleInputText = (event, name) => {
     if(name === "username") {
       setUserName(event.target.value);
     } else {
       setPassword(event.target.value);
+    }
+
+    if(name === "password" && event.target.value === "hamid") {
+        setRoute("./home")
+    }
+  }
+
+  const handleLogin = () => {
+    if(username.toLowerCase() === "hamid" && password.toLowerCase() === "hamid") {
+      setIsLogin(true);
+      setIsError(false);
+    } else {
+      setIsLogin(false);
+      setIsError(true)
+      setUserName("");
+      setPassword("");
+      setRoute("./")
     }
   }
 
@@ -20,6 +38,15 @@ export default function login() {
       <h1>Please Login to Continue</h1>
       <p>Now Manage your Daily tasks and track your task's Efficiency and Speed!</p>
       <div className="login-container">
+      <div className="input-bar">
+          {
+            isLogin && <p className="success-text">Logging you in...</p> 
+          }
+          {
+            isError && <p className="error-text">Please Enter Valid Credentials</p>
+
+          }
+        </div>
         <div className="input-bar">
           <p className='input-title'>Username</p>
           <input 
@@ -39,8 +66,8 @@ export default function login() {
           />
         </div>
         <div className="login-bar">
-          <Link href="./home">
-            <a className="button">
+          <Link href={route}>
+            <a className="button" onClick={handleLogin}>
               Login
             </a>
           </Link>
@@ -60,11 +87,11 @@ export default function login() {
         padding: 1em 3em;
         display: grid;
         place-items: center;
-        height: 14em;
+        height: 20em;
       }
 
       .input-bar {
-        width: 20em;
+        width: 50%;
         text-align: left;
       }
 
@@ -90,6 +117,7 @@ export default function login() {
         width: 20em;
         text-align: left;
         margin: 2em;
+        margin-left: -2.5em;
       }
 
       .button {
@@ -113,6 +141,20 @@ export default function login() {
       .button:focus {
         border: 1px solid #ccf;
         outline: none;
+      }
+
+      .success-text {
+        color: green;
+        font-weight: bold;
+        font-size: 14px;
+        letter-spacing: 0.1em;
+      }
+
+      .error-text {
+        color: red;
+        font-weight: bold;
+        font-size: 14px;
+        letter-spacing: 0.1em;
       }
       `}
       </style>    
