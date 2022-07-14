@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import Head from 'next/head';
 import all_tasks from '../Data/all_tasks';
+import { getFullDateTime, parseDate, secToTime } from '../Utils/DateTimeUtils';
 
 
 export default function Home() {
-  const [taskData, setTaskData] = useState(all_tasks);
+  const [taskData, setTaskData] = useState([]);
   const [isPopup, setIsPopup] = useState(false);
   const [newTask, setNewTask] = useState("");
   const [isChecked, setIsChecked] = useState(false);
@@ -21,41 +22,65 @@ export default function Home() {
 
   const handleNewTask = () => {
     const newTaskEntry = {
-      id: taskData && taskData[taskData.length - 1].id + 1,
+      id: taskData && taskData.length > 0 ? taskData[0].id + 1 : 1,
       name: newTask,
       status: {
         started: false,
         completed: false,
       },
+      completed_in: 0,
+      created_at: Date.now(),
       todo: {
-        id: taskData && taskData[taskData.length - 1].todo.id + 1,
+        id: 1,
         name: "Not-yet",
         isCompleted: false
       }
     };
 
     taskData.unshift(newTaskEntry);
+    setNewTask("");
     setIsPopup(false);
   }
 
-  // const handleCheckbox = (e, id) => {
-  //   const filterData = all_tasks.find(val => val.id === id);
-  //   filterData.status.completed = e.target.checked ? true : false;
-
-  //   setTaskData(taskData)
-  // }
-
   const handleCheckbox = (e, id) => {
-  const filterData = all_tasks.find(val => val.id === id);
-  filterData.status.completed = e.target.checked ? true : false;
-  setRender(e.target.checked);
-  setRenderId(id);
-  setTaskData(taskData);
-}
+    const filterData = taskData.find(val => val.id === id);
+    if(filterData.status.started === true) {
+      filterData.status.completed = e.target.checked ? true : false;
+      setRender(e.target.checked);
+      setRenderId(id);
+      setTaskData(taskData);
+      getCurrentFinishedTime(id);
+    } 
+  }
+
+  const handleTaskStarted = (id) => {
+    const filterData = taskData.find(val => val.id === id);
+    filterData.status.started = true;
+    getCurrentStartedTime(id);
+    setRenderId(id);
+    setTaskData(taskData);
+  }
+
+  const getCurrentStartedTime = (id) => {
+    const filterData = taskData.find(val => val.id === id);
+    if(filterData.status.started === true) {
+      const StartedDate = Date.now();
+      filterData.completed_in = StartedDate
+    }
+  }
+
+  const getCurrentFinishedTime = (id) => {
+    const filterData = taskData.find(val => val.id === id);
+    if (filterData.status.completed === true) {
+      const FinishedDate = Date.now();
+      filterData.completed_in = FinishedDate
+    }
+  }
 
   useEffect(() => {
     setTaskData(taskData)
-  }, [taskData, render, renderId])
+  }, [taskData, render, renderId]);
+
 
   return (
     <div>
@@ -91,27 +116,48 @@ export default function Home() {
           <h3>Current Tasks</h3>
           <div className="task-list-bar">
           {
-            taskData && taskData.map((data, idx) => (
+            taskData && taskData.length > 0
+              ? taskData.map((data, idx) => (
                 <div className="task-list">
                   <div key={data.id} className="task-flex">
                     <input 
                       type="checkbox" 
                       className="checkbox"
                       checked={setIsChecked["checked"]}
+                      disabled={data.status.started === false ? true : false}
                       onChange={(e) => handleCheckbox(e, data.id)}
                     />
                     <div className="tast-bar">
-                      <h3 className="task-title">{data.name}</h3>
+                      <h3 className="task-title">{data.name.toUpperCase()}</h3>
                       <span>Todo: Remaining:5, Completed:5</span>
+                      <p className="created_at">Created at: {getFullDateTime(data.created_at, true, true)}</p>
                     </div>
                   </div>
                   <div className="task-flex">
-                    {data.status.completed ? null : <button className="btn btn-start">Start</button>}
-                    {data.status.completed ? <button className="btn btn-completed">Completed</button> : null}
-                    {data.status.start ? <button className="btn btn-freeze">Freeze</button> : null}
+                    { 
+                      data.status.completed 
+                      ? null 
+                      :<>
+                        <button 
+                           className="btn btn-start" 
+                           disabled={data.status.started === true ? true : false}
+                           onClick={() => handleTaskStarted(data.id)}>{data.status.started ? "Started" : "Start"}
+                         </button>
+                         {data.status.started ? <p className="created_at">{getFullDateTime(data.completed_in)}</p> : null}
+                         </>
+                    }
+                    {data.status.completed 
+                    ?
+                    <>
+                      <button className="btn btn-completed">Completed</button>
+                      <p className="created_at">{getFullDateTime(data.completed_in, true, true)}</p>
+                    </>
+                    : null}
+                    {data.status.started && data.status.completed === false ? <button className="btn btn-freeze">Freeze </button> : null}
                   </div>
                 </div>
             ))
+            : <h3>Add task to get Started</h3>
           }
           </div>
           <button className="new-task-btn" onClick={() => handlePopup("open")}>
@@ -131,7 +177,7 @@ export default function Home() {
         }
 
         .task-container {
-          background-color: #cfc;
+          background-color: #cca;
           height: 80%;
           width: 70%;
           padding: 1em 3em;
@@ -146,14 +192,14 @@ export default function Home() {
         .task-list {
           height: 5em;
           background-color: #fff;
-          margin: 1em 0em;
+          margin: 2em 0em;
           border-radius: 1em;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 0em 2em;
+          padding: 1em 2em;
           cursor: pointer;
-          
+          position: relative;
         }
 
         .task-flex {
@@ -166,6 +212,17 @@ export default function Home() {
         .task-title {
           margin-bottom: 0.3em;
           margin-top: -0.2em;
+          letter-spacing: 0.1em;
+        }
+
+        .created_at {
+          margin-top: 0.2em;
+          color: green;
+          font-size: 10px;
+          font-weight: bold;
+          letter-spacing: 0.2em;
+          position: absolute;
+          bottom:0em;
         }
 
         .checkbox {
@@ -191,6 +248,10 @@ export default function Home() {
         }
 
         .btn-completed {
+          background-color: #ccc;
+        }
+
+        .btn-freeze {
           background-color: yellow;
         }
 

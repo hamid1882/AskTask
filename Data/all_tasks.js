@@ -6,6 +6,7 @@ const all_tasks = [
       started: false,
       completed: false,
     },
+    completed_in: 0,
     todo: [
       {
         id: 1,
@@ -21,6 +22,7 @@ const all_tasks = [
       started: false,
       completed: false,
     },
+    completed_in: 0,
     todo: [
       {
         id: 1,
@@ -36,6 +38,7 @@ const all_tasks = [
       started: false,
       completed: false,
     },
+    completed_in: 0,
     todo: [
       {
         id: 1,
