@@ -17,6 +17,8 @@ export default function login() {
 
     if(name === "password" && event.target.value === "hamid") {
         setRoute("./home")
+    } else {
+      setRoute("./")
     }
   }
 
