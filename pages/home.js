@@ -4,9 +4,12 @@ import all_tasks from '../Data/all_tasks';
 
 
 export default function Home() {
-  const [taskData, setTaskData] = useState([]);
+  const [taskData, setTaskData] = useState(all_tasks);
   const [isPopup, setIsPopup] = useState(false);
   const [newTask, setNewTask] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
+  const [render, setRender] = useState(false)
+  const [renderId, setRenderId] = useState(0);
 
   const handlePopup = (name) => {
     if(name === "open") {
@@ -35,9 +38,24 @@ export default function Home() {
     setIsPopup(false);
   }
 
+  // const handleCheckbox = (e, id) => {
+  //   const filterData = all_tasks.find(val => val.id === id);
+  //   filterData.status.completed = e.target.checked ? true : false;
+
+  //   setTaskData(taskData)
+  // }
+
+  const handleCheckbox = (e, id) => {
+  const filterData = all_tasks.find(val => val.id === id);
+  filterData.status.completed = e.target.checked ? true : false;
+  setRender(e.target.checked);
+  setRenderId(id);
+  setTaskData(taskData);
+}
+
   useEffect(() => {
-    setTaskData(all_tasks)
-  }, [])
+    setTaskData(taskData)
+  }, [taskData, render, renderId])
 
   return (
     <div>
@@ -71,24 +89,31 @@ export default function Home() {
       <div className="home">
         <div className="task-container">
           <h3>Current Tasks</h3>
+          <div className="task-list-bar">
           {
             taskData && taskData.map((data, idx) => (
-            <div key={data.id} className="task-list">
-              <div className="task-flex">
-                <input type="checkbox" className="checkbox" />
-                <div className="tast-bar">
-                  <h3 className="task-title">{data.name}</h3>
-                  <span>Todo: Remaining:5, Completed:5</span>
+                <div className="task-list">
+                  <div key={data.id} className="task-flex">
+                    <input 
+                      type="checkbox" 
+                      className="checkbox"
+                      checked={setIsChecked["checked"]}
+                      onChange={(e) => handleCheckbox(e, data.id)}
+                    />
+                    <div className="tast-bar">
+                      <h3 className="task-title">{data.name}</h3>
+                      <span>Todo: Remaining:5, Completed:5</span>
+                    </div>
+                  </div>
+                  <div className="task-flex">
+                    {data.status.completed ? null : <button className="btn btn-start">Start</button>}
+                    {data.status.completed ? <button className="btn btn-completed">Completed</button> : null}
+                    {data.status.start ? <button className="btn btn-freeze">Freeze</button> : null}
+                  </div>
                 </div>
-              </div>
-              <div className="task-flex">
-                <button className="btn btn-start">Start</button>
-                <button className="btn btn-completed">Completed</button>
-                <button className="btn btn-freeze">Freeze</button>
-              </div>
-            </div>
             ))
           }
+          </div>
           <button className="new-task-btn" onClick={() => handlePopup("open")}>
             New Task
           </button>
@@ -112,6 +137,12 @@ export default function Home() {
           padding: 1em 3em;
         }
 
+        .task-list-bar {
+          overflow-y: scroll;
+          height: 80%;
+          padding: 1em 1em;
+        }
+
         .task-list {
           height: 5em;
           background-color: #fff;
@@ -122,6 +153,7 @@ export default function Home() {
           align-items: center;
           padding: 0em 2em;
           cursor: pointer;
+          
         }
 
         .task-flex {
