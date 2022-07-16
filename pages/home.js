@@ -20,7 +20,50 @@ export default function Home() {
   const [render, setRender] = useState(false)
   const [renderId, setRenderId] = useState(0);
   const [isExpand, setIsExpand] = useState(false);
-  const [currentId, setCurrentId] = useState(0);
+  const [selectedId, setSelectedId] = useState(0);
+  const [isEditPopup, setIsEditPopup] = useState(false);
+
+  const handleUpdateTask = () => {
+    const UpdatedTask = {
+      id: selectedId,
+      name: newTask.toLowerCase(),
+      status: {
+        started: false,
+        completed: false,
+      },
+      completed_in: 0,
+      created_at: Date.now(),
+      todo: [
+        {
+          id: 1,
+          name: "Not-yet",
+          isCompleted: false 
+        },
+        {
+          id: 2,
+          name: "absolutely done",
+          isCompleted: true
+        }
+      ]
+    };
+
+    let selectedTask = taskData.find(val => val.id === selectedId);
+    selectedTask = UpdatedTask 
+    localStorage.setItem("all_tasks", JSON.stringify(taskData));
+    setIsEditPopup(false);
+
+  }
+
+  const handleEditTask = (id, name) => {
+    setIsEditPopup(true);
+    setSelectedId(id);
+    setNewTask(taskData.find(val => val.id === id).name)
+  }
+
+  const handleCollapse = (id) => {
+    setIsExpand(!isExpand);
+    setSelectedId(id);
+  }
 
   const handlePopup = (name) => {
     localStorage.setItem("all_tasks", JSON.stringify([]));
@@ -55,8 +98,9 @@ export default function Home() {
       ]
     };
 
+
     if (newTask.length > 2) {
-      taskData ? taskData.unshift(newTaskEntry) : taskData = newTaskEntry;
+      taskData ? taskData.unshift(newTaskEntry) : setTaskData(newTaskEntry);
       setNewTask("");
       setIsPopup(false);
       localStorage.setItem("all_tasks", JSON.stringify(taskData));
@@ -102,14 +146,6 @@ export default function Home() {
     }
   }
 
-  const handleExpanded = (id) => {
-    setCurrentId(id);
-
-    if(id === currentId) {
-      setIsExpand(!isExpand)
-    }
-  }
-
   useEffect(() => {
     const savedData = localStorage.getItem('all_tasks');
     setTaskData(JSON.parse(savedData));
@@ -139,24 +175,51 @@ export default function Home() {
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
             />
-            {/* <div>
-              <h5>Add todo's</h5> 
-              <input type="text" />
-              <button>Add</button>
-              {
-                taskData.todo && taskData.todo.map(val => (
-                  <div>
-                    <h2>{val.name}</h2>
-                  </div>  
-                ))  
+                <button className="btn btn-start" onClick={handleNewTask}>Add new Task</button>
+                </div>
+              </div>
+            </div>
+            : null
+            }
+            {
+              isEditPopup ?
+              <div className="add-task-popup">
+              <div className="task-popup-container">
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/High-contrast-dialog-close.svg/640px-High-contrast-dialog-close.svg.png" 
+                  alt="Close popup"
+                  className='close-icon'
+                  onClick={() => setIsEditPopup(false)}
+                />
+                <div className="add-task-bar">
+                  <h2>Edit {taskData.find(val => val.id === selectedId).name.toUpperCase()} task</h2>
+                  <input 
+                    className='input' 
+                    type="text" 
+                    placeholder="Task Title"
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
+                  />
+                  {/* <div>
+                       <h5>Add todo's</h5> 
+                       <input type="text" />
+                       <button>Add</button>
+                       {
+                         taskData.todo && taskData.todo.map(val => (
+                           <div>
+                             <h2>{val.name}</h2>
+                           </div>  
+                         ))  
+                       }
+                     </div> */
+                     }
+                    <button className="btn btn-start" onClick={handleUpdateTask}>Update Task</button>
+                 </div>
+                </div>
+              </div>
+              :
+              null
               }
-            </div> */}
-            <button className="btn btn-start" onClick={handleNewTask}>Add new Task</button>
-          </div>
-        </div>
-      </div>
-      :null
-      }
       <div className="home">
         <div className="task-container">
           <h3>Current Tasks</h3>
@@ -165,11 +228,19 @@ export default function Home() {
             taskData && taskData.length > 0
               ? taskData.map((data, idx) => (
                 <div className="task-list">
-                  <p className="options-expander" onClick={() => handleExpanded(data.id)}>{isExpand && data.id === currentId ? "⏬" : "⏫" }</p>
                   {
-                    isExpand && data.id === currentId
+                  isExpand && selectedId === data.id
+                  ? <p 
+                    className="options-expander" 
+                    onClick={() => handleCollapse(data.id)}>⏬</p>
+                  : <p 
+                    className="options-expander" 
+                    onClick={() => handleCollapse(data.id)}>⏫</p>
+                  }
+                  {
+                    isExpand && selectedId === data.id
                     ? <div className="collapse-options">
-                        <p>✏</p>
+                        <p onClick={() => handleEditTask(data.id, "open")}>✏</p>
                         <p>⏳</p>
                       </div>
                     : null
