@@ -19,8 +19,11 @@ export default function Home() {
   const [isChecked, setIsChecked] = useState(false);
   const [render, setRender] = useState(false)
   const [renderId, setRenderId] = useState(0);
+  const [isExpand, setIsExpand] = useState(false);
+  const [currentId, setCurrentId] = useState(0);
 
   const handlePopup = (name) => {
+    localStorage.setItem("all_tasks", JSON.stringify([]));
     if(name === "open") {
       setIsPopup(true)
     } else {
@@ -31,24 +34,35 @@ export default function Home() {
   const handleNewTask = () => {
     const newTaskEntry = {
       id: taskData && taskData.length > 0 ? taskData[0].id + 1 : 1,
-      name: newTask,
+      name: newTask.toLowerCase(),
       status: {
         started: false,
         completed: false,
       },
       completed_in: 0,
       created_at: Date.now(),
-      todo: {
-        id: 1,
-        name: "Not-yet",
-        isCompleted: false
-      }
+      todo: [
+        {
+          id: 1,
+          name: "Not-yet",
+          isCompleted: false
+        },
+        {
+          id: 2,
+          name: "absolutely done",
+          isCompleted: true
+        }
+      ]
     };
 
-    taskData.unshift(newTaskEntry);
-    setNewTask("");
-    setIsPopup(false);
-    localStorage.setItem("all_tasks", JSON.stringify(taskData));
+    if (newTask.length > 2) {
+      taskData ? taskData.unshift(newTaskEntry) : taskData = newTaskEntry;
+      setNewTask("");
+      setIsPopup(false);
+      localStorage.setItem("all_tasks", JSON.stringify(taskData));
+    } else {
+      alert("Please Give a Title to your task, min: 3 letter")
+    }
   }
 
   const handleCheckbox = (e, id) => {
@@ -88,6 +102,14 @@ export default function Home() {
     }
   }
 
+  const handleExpanded = (id) => {
+    setCurrentId(id);
+
+    if(id === currentId) {
+      setIsExpand(!isExpand)
+    }
+  }
+
   useEffect(() => {
     const savedData = localStorage.getItem('all_tasks');
     setTaskData(JSON.parse(savedData));
@@ -117,6 +139,18 @@ export default function Home() {
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
             />
+            {/* <div>
+              <h5>Add todo's</h5> 
+              <input type="text" />
+              <button>Add</button>
+              {
+                taskData.todo && taskData.todo.map(val => (
+                  <div>
+                    <h2>{val.name}</h2>
+                  </div>  
+                ))  
+              }
+            </div> */}
             <button className="btn btn-start" onClick={handleNewTask}>Add new Task</button>
           </div>
         </div>
@@ -127,10 +161,19 @@ export default function Home() {
         <div className="task-container">
           <h3>Current Tasks</h3>
           <div className="task-list-bar">
-          {
+          { 
             taskData && taskData.length > 0
               ? taskData.map((data, idx) => (
                 <div className="task-list">
+                  <p className="options-expander" onClick={() => handleExpanded(data.id)}>{isExpand && data.id === currentId ? "⏬" : "⏫" }</p>
+                  {
+                    isExpand && data.id === currentId
+                    ? <div className="collapse-options">
+                        <p>✏</p>
+                        <p>⏳</p>
+                      </div>
+                    : null
+                  }
                   <div key={data.id} className="task-flex">
                     <input 
                       type="checkbox" 
@@ -142,7 +185,7 @@ export default function Home() {
                     <div className="tast-bar">
                       <h3 className="task-title">{data.name.toUpperCase()}</h3>
                       <Link href={`./task-manager/${data.name.toLowerCase().replace(/ /g,"-")}`}>
-                        <a>Todo: Remaining:5, Completed:5</a> 
+                        <a>Todo: Remaining:{data.todo.length}, Completed:{data.todo && data.todo.filter(val => val.isCompleted === true).length}</a> 
                       </Link>
                       <p className="created_at">Created at: {getFullDateTime(data.created_at, true, true)}</p>
                     </div>
@@ -182,12 +225,32 @@ export default function Home() {
       <style jsx>{
         `
         .home{
-          background-color: #ccf;
+          background-color: #000;
           height: 100vh;
           margin: 0;
           display: flex;
           justify-content: center;
           align-items: center;
+        }
+
+        .options-expander {
+          position: absolute;
+          top: -1.2em;
+          right: 2em;  
+        }
+
+        .collapse-options {
+          position: absolute;
+          top: -1.5em;
+          right: 3.3em;
+          display: flex;
+          align-items: center;
+          gap: 0.8em;
+          background-color: #fff;
+          height: 2em;
+          padding: 0em 3em;
+          border-top-left-radius: 0.4em; 
+          border-top-right-radius: 0.4em; 
         }
 
         .task-container {
