@@ -1,5 +1,5 @@
 import React,{useState} from "react";
-import Link from 'next/link'
+import Link from 'next/link';
 
 export default function login() {
   const [username, setUserName] = useState("");
@@ -82,8 +82,6 @@ export default function login() {
       }
 
       .login-container {
-        border: 1px solid #ccc;
-        box-shadow: 2px 2px 5px 1px #ccf;
         margin: 2em 20%;
         border-radius: 2em;
         padding: 1em 3em;

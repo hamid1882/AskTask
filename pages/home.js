@@ -1,11 +1,19 @@
 import React, {useState, useEffect} from 'react';
 import Head from 'next/head';
 import all_tasks from '../Data/all_tasks';
-import { getFullDateTime, parseDate, secToTime } from '../Utils/DateTimeUtils';
-
+import { getFullDateTime } from '../Utils/DateTimeUtils';
+import Link from 'next/link';
 
 export default function Home() {
-  const [taskData, setTaskData] = useState([]);
+  let savedData = [];
+
+  const handleLocalStorage = () => {
+    if (typeof window !== "undefined") {
+      savedData = JSON.parse(localStorage.getItem("all_tasks"));
+    }
+  } 
+
+  const [taskData, setTaskData] = useState(savedData);
   const [isPopup, setIsPopup] = useState(false);
   const [newTask, setNewTask] = useState("");
   const [isChecked, setIsChecked] = useState(false);
@@ -40,6 +48,7 @@ export default function Home() {
     taskData.unshift(newTaskEntry);
     setNewTask("");
     setIsPopup(false);
+    localStorage.setItem("all_tasks", JSON.stringify(taskData));
   }
 
   const handleCheckbox = (e, id) => {
@@ -50,6 +59,7 @@ export default function Home() {
       setRenderId(id);
       setTaskData(taskData);
       getCurrentFinishedTime(id);
+      localStorage.setItem("all_tasks", JSON.stringify(taskData));
     } 
   }
 
@@ -59,6 +69,7 @@ export default function Home() {
     getCurrentStartedTime(id);
     setRenderId(id);
     setTaskData(taskData);
+    localStorage.setItem("all_tasks", JSON.stringify(taskData));
   }
 
   const getCurrentStartedTime = (id) => {
@@ -78,9 +89,10 @@ export default function Home() {
   }
 
   useEffect(() => {
-    setTaskData(taskData)
-  }, [taskData, render, renderId]);
-
+    const savedData = localStorage.getItem('all_tasks');
+    setTaskData(JSON.parse(savedData));
+    handleLocalStorage();
+  }, []);
 
   return (
     <div>
@@ -129,7 +141,9 @@ export default function Home() {
                     />
                     <div className="tast-bar">
                       <h3 className="task-title">{data.name.toUpperCase()}</h3>
-                      <span>Todo: Remaining:5, Completed:5</span>
+                      <Link href={`./task-manager/${data.name.toLowerCase().replace(/ /g,"-")}`}>
+                        <a>Todo: Remaining:5, Completed:5</a> 
+                      </Link>
                       <p className="created_at">Created at: {getFullDateTime(data.created_at, true, true)}</p>
                     </div>
                   </div>
