@@ -5,7 +5,7 @@ import Signup from "../Components/Signup";
 import Logo from "../public/images/Logo.svg";
 import Login from "../Components/Login";
 
-export default function login() {
+export default function LoginPage() {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(false);

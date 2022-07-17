@@ -72,7 +72,7 @@ export default function Signup({username, password, confirmPassword, handleSignu
 
       .input-bar {
         width: 100%;
-        margin: 0.5em 0em;
+        margin: 1em 0em;
         text-align: left;
         color: #fff;
       }
@@ -115,7 +115,7 @@ export default function Signup({username, password, confirmPassword, handleSignu
         top: -3em;
         left: 18em;
         cursor: pointer;
-        margin-bottom: -3em;
+        margin-bottom: -2em;
       }
 
       .forgot-password {
@@ -141,11 +141,10 @@ export default function Signup({username, password, confirmPassword, handleSignu
         text-decoration: none;
         display: flex;
         justify-content: center;
-        margin: 0 auto;
+        margin: 1em auto;
         cursor: pointer;
         border-radius: 2em;
         width: 100%;
-        margin: 3.5em 0em;
       }
 
       .button:hover {

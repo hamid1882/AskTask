@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import Login from "./login.js";
+import LoginPage from "./LoginPage.js";
 
 export default function Home() {
   return (
@@ -13,7 +13,7 @@ export default function Home() {
         <span className="title" style={{fontSize: "46px"}}>Habit Tracker</span>
       </div>
       <div className="user-login-container">
-        <Login />
+        <LoginPage />
       </div>
       <style jsx>{`
         .main {
