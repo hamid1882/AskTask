@@ -2,7 +2,6 @@ import React,{useState, useEffect} from "react";
 import Link from 'next/link';
 import axios from "axios";
 import Signup from "../Components/Signup";
-import Logo from "../public/images/Logo.svg";
 import Login from "../Components/Login";
 
 export default function LoginPage() {
@@ -27,7 +26,6 @@ export default function LoginPage() {
   }
   
   const handleInputText = (event, name, type) => {
-    console.log(users);
     if(name === "username") {
       setUserName(event.target.value);
       const foundUser = users && users.find(val => val.name === event.target.value);
@@ -116,7 +114,6 @@ export default function LoginPage() {
     } else {
       setRoute("./")
     }
-
   }, [isUser])
 
   return (

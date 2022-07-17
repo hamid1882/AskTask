@@ -9,7 +9,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="top-bar">
-        <img src={"https://learn.g2.com/hubfs/free%20animation%20software-1.png"} alt="logo" className="logo" />
+        <img src="/static/images/logo.png" alt="logo" className="logo" style={{height: "5em", width: "5em"}} />
         <span className="title" style={{fontSize: "46px"}}>Habit Tracker</span>
       </div>
       <div className="user-login-container">
@@ -46,12 +46,10 @@ export default function Home() {
           gap: 1.5em;
           align-items: center;
           padding: 2em;
-          height: 10%;
+          height: auto;
         }
   
         .logo {
-          width: 5em;
-          height: 5em;
           border-radius: 1em;
         }
   
