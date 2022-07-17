@@ -1,5 +1,6 @@
-import React,{useState} from "react";
+import React,{useState, useEffect} from "react";
 import Link from 'next/link';
+import axios from "axios";
 
 export default function login() {
   const [username, setUserName] = useState("");
@@ -7,33 +8,68 @@ export default function login() {
   const [isLogin, setIsLogin] = useState(false);
   const [route, setRoute]  = useState("./");
   const [isError, setIsError] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [isUser,setIsUser] = useState({});
+  const [logggedInId, setLoggedInId] = useState(0);
+
+  const getAllUsers = () => {
+    axios.get("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/users").then(res => {
+      setUsers(res.data)
+    }).catch(err => {
+      console.log(err);
+    })
+  }
   
   const handleInputText = (event, name) => {
+
+
     if(name === "username") {
       setUserName(event.target.value);
-    } else {
+      const foundUser = users.find(val => val.name === event.target.value);
+      if(foundUser) {
+        setIsUser(foundUser);
+      } else {
+        setIsUser({})
+      }
+    } 
+    
+    if(name === "password") {
       setPassword(event.target.value);
-    }
-
-    if(name === "password" && event.target.value === "hamid") {
-        setRoute("./home")
-    } else {
-      setRoute("./")
+      const foundUser = users.find(val => val.password === event.target.value);
+      if(foundUser) {
+        setIsUser(foundUser);
+      } else {
+        setIsUser({});
+      } 
     }
   }
 
   const handleLogin = () => {
-    if(username.toLowerCase() === "hamid" && password.toLowerCase() === "hamid") {
+    if(isUser.name === username && isUser.password === password) {
       setIsLogin(true);
       setIsError(false);
+      setRoute("./home")
+      localStorage.setItem("user", JSON.stringify(isUser));
+      localStorage.setItem("isLoggedIn", true);
     } else {
       setIsLogin(false);
-      setIsError(true)
-      setUserName("");
-      setPassword("");
-      setRoute("./")
+      setIsError(true);
+      setRoute("./");
+      localStorage.removeItem("user")
+      localStorage.setItem("isLoggedIn", false);
     }
   }
+
+  useEffect(() => {
+    getAllUsers();
+
+    if(isUser.name === username && isUser.password === password) {
+      setRoute("./home")
+    } else {
+      setRoute("./")
+    }
+
+  }, [isUser])
 
   return (
     <div className="login-page">
