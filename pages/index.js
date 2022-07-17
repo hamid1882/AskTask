@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import Link from 'next/link';
 import Login from "./login.js";
 
 export default function Home() {
@@ -9,16 +8,57 @@ export default function Home() {
         <title>Task Manager - Login</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="topbar">
-        <h2>Task Manager</h2>
-        <button className="login-btn">Login</button>
+      <div className="top-bar">
+        <img src={"https://learn.g2.com/hubfs/free%20animation%20software-1.png"} alt="logo" className="logo" />
+        <span className="title" style={{fontSize: "46px"}}>Habit Tracker</span>
       </div>
-      <Login />
+      <div className="user-login-container">
+        <Login />
+      </div>
       <style jsx>{`
         .main {
           height: 100vh;
-          background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+          background: radial-gradient(#694D78,#52435B);
           overflow: hidden;
+          position: relative;
+        }
+
+        .user-login-container {
+          position: relative;
+          top: -1.5em;
+          left: 50em;
+          width: 360px;
+          height: 496px;
+          background: radial-gradient(#694D78,#52435B);
+          opacity: 0.9;
+          border-radius: 34px;
+          border: 1px solid #707070;
+        }
+
+        .login-page {
+          height: "496px";
+          width: "360px";
+          text-align: center;
+        }
+  
+        .top-bar {
+          display: flex;
+          gap: 1.5em;
+          align-items: center;
+          padding: 2em;
+          height: 10%;
+        }
+  
+        .logo {
+          width: 5em;
+          height: 5em;
+          border-radius: 1em;
+        }
+  
+        .title {
+          font-size: "46px";
+          font-weight: bold;
+          color: rgba(255,255,255, 0.8)
         }
 
         .topbar {
