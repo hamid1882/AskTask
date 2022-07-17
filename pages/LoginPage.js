@@ -16,6 +16,7 @@ export default function LoginPage() {
   const [isSignup, setIsSignup] = useState(false);
   const [logggedInId, setLoggedInId] = useState(0);
   const [isViewPassword, setIsViewPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getAllUsers = () => {
     axios.get("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/users").then(res => {
@@ -82,14 +83,19 @@ export default function LoginPage() {
       setUserName("");
       setPassword("");
       setConfirmPassword("");
-    } else {
+    } else if (username.length > 3 && password.length > 3 && confirmPassword.length > 3) {
+      setIsLoading(true);
       axios.post("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/users",{name: username, password: password}).then(res => {
         users.push(res.data)
         setIsSignup(false);
         setUserName("");
         setPassword("");
         alert("Account created successfully, login to continue");
+        setIsLoading(false);
       }).catch(err => console.log(err));
+    } else {
+      setIsLoading(false);
+      alert("Make sure you have entered your name, password and confirm password correctly")
     }
   }
 
@@ -150,6 +156,7 @@ export default function LoginPage() {
         confirmPassword={confirmPassword}
         handleSignup={handleSignup}
         handleInputText={handleInputText}
+        isLoading={isLoading}
       />
       }
       <style jsx>{`

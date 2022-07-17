@@ -17,7 +17,7 @@ export default function Topbar({userName, isAvatar, handleLogout}) {
 
 		// fetch(
 		// 	`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/users/${userId.id}`,
-		// 	{
+		// 	{ 
 		// 		method: 'PUT',
 		// 		body: {avatar: formData},
 		// 	}
@@ -54,7 +54,7 @@ export default function Topbar({userName, isAvatar, handleLogout}) {
             accept="image/*"
             onChange={handleChangeImage}
           />
-          <img 
+            <img 
             src={isAvatar} 
             alt="icon" 
             className="profile-pic" 

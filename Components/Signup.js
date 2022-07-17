@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import React, {useState} from 'react'
 
-export default function Signup({username, password, confirmPassword, handleSignup, handleInputText}) {
+export default function Signup({username, password, confirmPassword, handleSignup, handleInputText, isLoading}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   return (
@@ -49,9 +49,10 @@ export default function Signup({username, password, confirmPassword, handleSignu
         </div>
         <div className="login-bar">
           <Link href={"./"}>
-            <a className="button" onClick={handleSignup}>
-              Sign up
-            </a>
+          {!isLoading
+            ? <a className="button" onClick={handleSignup}>Sign up</a>
+            : <img className='button' src="/static/loader/new-mini-loader.svg" alt="loading" style={{width: "2em", height: "2em"}}/>
+          }
           </Link>
         </div>
         <style jsx>{`

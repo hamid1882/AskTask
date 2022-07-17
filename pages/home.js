@@ -17,6 +17,7 @@ export default function home() {
     if(typeof window !== "undefined") {
       const isLogged = localStorage.getItem("isLoggedIn");
       const user = JSON.parse(localStorage.getItem("user"));
+      setIsAvatar("/static/loader/mini-loader.svg")
       if(user) {
         setIsAvatar(user.avatar);
         setUserName(user.name);
