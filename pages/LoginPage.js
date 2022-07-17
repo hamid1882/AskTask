@@ -110,10 +110,11 @@ export default function LoginPage() {
     getAllUsers();
 
     if(isUser.name === username && isUser.password === password) {
-      setRoute("./home")
+      setRoute("./home");
     } else {
       setRoute("./")
     }
+
   }, [isUser])
 
   return (

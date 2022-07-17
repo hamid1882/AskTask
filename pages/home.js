@@ -1,8 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import Link from "next/link";
+import Topbar from '../Components/Topbar';
+import Sidebar from '../Components/Sidebar';
+import TaskContainer from '../Components/TaskContainer';
 
 export default function home() {
   const [isAvatar, setIsAvatar] = useState("/static/images/logo.png");
+  const [userName, setUserName] = useState("user");
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
@@ -13,31 +17,24 @@ export default function home() {
     if(typeof window !== "undefined") {
       const isLogged = localStorage.getItem("isLoggedIn");
       const user = JSON.parse(localStorage.getItem("user"));
-      setIsAvatar(user.avatar);
-      // !isLogged && window.location.href = "./";
-      console.log(user.avatar);
+      if(user) {
+        setIsAvatar(user.avatar);
+        setUserName(user.name);
+      }
     }
     }, []);
 
 
   return (
     <div className='home-container'>
-      <div className="top-bar">
-        <div className="flex-1">
-          <img src="/static/images/logo.png" alt="icon" style={{height: "3em", width: "3em"}} />
-          <h2 className="title">Habit Tracker</h2>
-        </div>
-        <div className="flex-1">
-          <div className="top-text-bar">
-            <h4 className="welocome-text">Welcome Touheed Ur Rehman</h4>
-            <button className="dashboard-btn">Dashboard</button>
-          </div>
-          <img 
-            src={isAvatar} 
-            alt="icon" 
-            className="profile-pic" 
-            style={{height: "3em", width: "3em", borderRadius: "50%"}} />
-        </div>
+      <Topbar 
+        userName={userName}
+        isAvatar={isAvatar}
+        handleLogout={handleLogout}
+      />
+      <div className="main-container">
+      <Sidebar />
+      <TaskContainer />
       </div>
       <style jsx>{
         `
@@ -46,27 +43,12 @@ export default function home() {
           height: 100vh;
           overflow: hidden;
           background: radial-gradient(#694D78,#52435B);
+          margin: 0;
         }
 
-        .top-bar {
-          height: 3em;
-          background-color: #C9B8D3;
-          margin: 1em;
-          border-radius: 3.5em;
+        .main-container {
           display: flex;
-          justify-content: space-between;
-          padding: 1em 2em;
-        }
-
-        .flex-1 {
-          display: flex;
-          align-items: center;
-          gap: 1em;
-        }
-
-        .top-text-bar {
-          display: grid; 
-        }
+        }    
         `
       }</style>
     </div>
