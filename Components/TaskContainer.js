@@ -1,4 +1,5 @@
 import React from 'react'
+import AddTaskPopup from './AddTaskPopup'
 
 export default function TaskContainer() {
   return (
@@ -6,7 +7,7 @@ export default function TaskContainer() {
         <h3 className="qoute">Your Habits will determine your future</h3>
         <img src="/static/images/plus.svg" alt="add" className="add-icon" />
         <p className="create-text">Create now</p>
-
+        <AddTaskPopup />
         <style jsx>{
         `
         .task-container {
@@ -19,6 +20,7 @@ export default function TaskContainer() {
           flex-direction: column;
           align-items: center;
           font-family: sans-serif;
+          position: relative;
         }
 
         .qoute {

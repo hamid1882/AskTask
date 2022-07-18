@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import React from 'react'
+import Input from './Input'
 
 export default function Login({isLogin, isError, username, password, isViewPassword, handleLogin, route, handleInputText, setIsViewPassword}) {
   return (
@@ -14,25 +15,26 @@ export default function Login({isLogin, isError, username, password, isViewPassw
         }
       </div>
       <div className="input-bar">
-        {username.length > 0 && <p className='input-title'>Username/Email</p>}
-        <input 
-          type="text" 
-          className="input" 
-          onChange={(e) => handleInputText(e, "username")} 
+        <Input
+          title={"Username/Email"}
+          type={"text"}
+          handleInputChange={handleInputText}
           value={username}
+          name={"username"}
           placeholder="Enter Email or your Username"
         />
       </div>
       <div className="input-bar">
-        {password.length > 0 && <p className='input-title'>Password</p>}
-        <input 
-          type={!isViewPassword ? "password" : "text"}
-          className="input" 
-          onChange={(e) => handleInputText(e, "password")} 
+      <Input
+          title={"Password"}
+          type={"input"}
+          handleInputChange={handleInputText}
           value={password}
+          name={"password"}
           placeholder="Enter Password"
+          togglePassword={setIsViewPassword}
+          isViewPassword={isViewPassword}
         />
-        <p className="show-psk" onClick={() => setIsViewPassword(!isViewPassword)}>👁</p>
       </div>
       <div className="forgot-password">Forgot password?</div>
       <div className="login-bar">
@@ -101,46 +103,6 @@ export default function Login({isLogin, isError, username, password, isViewPassw
         margin: 1em 0em;
         text-align: left;
         color: #fff;
-      }
-
-      .input-title {
-        text-align: left;
-        margin-bottom: 5px;
-        font-size: 10px;
-        letter-spacing: 0.2em;
-        color: rgba(255, 255, 255, 0.5);
-      }
-
-      .input {
-        width: 100%;
-        border: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        outline: none;
-        shadow: none;
-        padding: 0.5em;
-        font-style: Roboto;
-        background: transparent;
-        color: #fff;
-      }
-
-      .input:focus {
-        outline: none;
-        border: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      }
-
-      .input:active {
-        outline: none;
-        border: none;
-        background: transparent;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      }
-
-      .show-psk {
-        position: relative;
-        top: -3em;
-        left: 18em;
-        cursor: pointer;
       }
 
       .forgot-password {
