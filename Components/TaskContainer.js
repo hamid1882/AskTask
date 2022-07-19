@@ -37,7 +37,14 @@ export default function TaskContainer({habitList}) {
       <div className={allHabits &&  allHabits.length > 5 ? "task-bar-big"  :"task-bar"}>
 
       {
-        isLoading ? <img src="/static/loader/new-mini-loader.svg" alt="loading" style={{width: "10em", height: "10em"}} /> : null
+        isLoading ? 
+        <div style={{display: "flex", justifyContent: "center", alignItems: "center", height: "100%"}}>
+          <img 
+          src="/static/loader/new-loader.svg" 
+          alt="loading" 
+          style={{width: "10em", height: "10em"}}
+        />
+        </div> : null
       }
     {
       allHabits && allHabits.length < 1
