@@ -1,28 +1,30 @@
 import Link from 'next/link'
 import React, {useState} from 'react'
 
-export default function Signup({username, password, confirmPassword, handleSignup, handleInputText, isLoading}) {
+export default function Signup({
+  username, password, confirmPassword, handleSignup, handleInputText, isLoading, fullName}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   return (
     <div className="login-container">
-      {/* <div className="input-bar">
-          {
-            isLogin && <p className="success-text">Logging you in...</p> 
-          }
-          {
-            isError && <p className="error-text">Please Enter Valid Credentials</p>
-
-          }
-        </div> */}
         <div className="input-bar">
-          {username.length > 0 &&  <p className='input-title'>Name</p>}
+          {fullName.length > 0 &&  <p className='input-title'>Full Name</p>}
+          <input 
+            type="text" 
+            className="input" 
+            onChange={(e) => handleInputText(e, "fullname", "signup")} 
+            value={fullName}
+            placeholder="Enter your Full Name"
+          />
+        </div>
+        <div className="input-bar">
+          {username.length > 0 &&  <p className='input-title'>Username</p>}
           <input 
             type="text" 
             className="input" 
             onChange={(e) => handleInputText(e, "username", "signup")} 
             value={username}
-            placeholder="Enter your Name"
+            placeholder="Enter your Username"
           />
         </div>
         <div className="input-bar">
@@ -64,11 +66,9 @@ export default function Signup({username, password, confirmPassword, handleSignu
 
       .login-container {
         width: 100%;
+        height: 10em;
         border-radius: 2em;
         padding: 1em 1.5em;
-        display: grid;
-        place-items: center;
-        height: 20em;
       }
 
       .input-bar {
@@ -131,6 +131,7 @@ export default function Signup({username, password, confirmPassword, handleSignu
       .login-bar {
         width: 10em;
         text-align: center;
+        margin: 2em auto;
       }
 
       .button {

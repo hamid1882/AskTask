@@ -7,6 +7,7 @@ import Login from "../Components/Login";
 export default function LoginPage() {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [isLogin, setIsLogin] = useState(false);
   const [route, setRoute]  = useState("./");
   const [isError, setIsError] = useState(false);
@@ -15,7 +16,7 @@ export default function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSignup, setIsSignup] = useState(false);
   const [logggedInId, setLoggedInId] = useState(0);
-  const [isViewPassword, setIsViewPassword] = useState(false);
+  const [isViewPassword, setIsViewPassword] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   const getAllUsers = () => {
@@ -25,11 +26,12 @@ export default function LoginPage() {
       console.log(err);
     })
   }
+
   
   const handleInputText = (event, name, type) => {
     if(name === "username") {
       setUserName(event.target.value);
-      const foundUser = users && users.find(val => val.name === event.target.value);
+      const foundUser = users && users.find(val => val.username === event.target.value);
       if(foundUser) {
         setIsUser(foundUser);
       } else {
@@ -47,12 +49,16 @@ export default function LoginPage() {
       } 
     }
 
+    if(name === "fullname") {
+      setFullName(event.target.value);
+    }
+
     if(name === "confirm-password") {
       setConfirmPassword(event.target.value);
     }
 
     if(type === "signup" && name === "username") {
-      const foundUser = users && users.find(val => val.name === event.target.value);
+      const foundUser = users && users.find(val => val.username === event.target.value);
       if(foundUser) {
         alert("User already exists");
       } else {
@@ -62,7 +68,7 @@ export default function LoginPage() {
   }
 
   const handleLogin = () => {
-    if(isUser.name === username && isUser.password === password) {
+    if(isUser.username === username && isUser.password === password) {
       setIsLogin(true);
       setIsError(false);
       setRoute("./home")
@@ -77,22 +83,77 @@ export default function LoginPage() {
     }
   }
 
+  const handleCreateData = () => {
+    const id = username+123;
+    let idx = 0;
+    const data = {
+        [id] : {
+          habit: [
+               {
+                 id: idx + 1,
+                 name: "Habit",
+                 created_at: "07-07-2022",
+                 motive: "Wanna get back into ground",
+                 completed: false
+               },
+               {
+                 id: idx + 2,
+                 name: "Habit",
+                 created_at: "07-07-2022",
+                 motive: "Wanna get back into ground",
+                 completed: false
+               },
+             ],
+           task_manager: [
+               {
+                 name: "TaskManager",
+                 created_at: "07-07-2022",
+                 completed: false,
+                 todo: [
+                   {
+                     name: "todo-1",
+                     completed: false
+                   },
+                 ],
+              },
+            ],
+          }
+        }
+    axios.post("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data", {data: data}).then(res => {
+        console.log(res.data);
+      }).catch(err => {
+        console.log(err);
+      })
+  }
+
   const handleSignup = () => {
-    if(users.find(val => val.name === username)) {
+    if(users.find(val => val.username === username)) {
       alert("User already exists");
       setUserName("");
       setPassword("");
+      setFullName("");
       setConfirmPassword("");
     } else if (username.length > 3 && password.length > 3 && confirmPassword.length > 3) {
       setIsLoading(true);
-      axios.post("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/users",{name: username, password: password}).then(res => {
+
+      const data = {
+        username: username, 
+        password: password, 
+        full_name: fullName,
+        data_id: username+123
+      }
+
+      axios.post("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/users", data).then(res => {
         users.push(res.data)
         setIsSignup(false);
         setUserName("");
         setPassword("");
+        setFullName("");
+        handleCreateData();
         alert("Account created successfully, login to continue");
         setIsLoading(false);
       }).catch(err => console.log(err));
+
     } else {
       setIsLoading(false);
       alert("Make sure you have entered your name, password and confirm password correctly")
@@ -115,7 +176,7 @@ export default function LoginPage() {
   useEffect(() => {
     getAllUsers();
 
-    if(isUser.name === username && isUser.password === password) {
+    if(isUser.username === username && isUser.password === password) {
       setRoute("./home");
     } else {
       setRoute("./")
@@ -157,6 +218,7 @@ export default function LoginPage() {
         handleSignup={handleSignup}
         handleInputText={handleInputText}
         isLoading={isLoading}
+        fullName={fullName}
       />
       }
       <style jsx>{`

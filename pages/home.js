@@ -3,14 +3,31 @@ import Link from "next/link";
 import Topbar from '../Components/Topbar';
 import Sidebar from '../Components/Sidebar';
 import TaskContainer from '../Components/TaskContainer';
+import axios from 'axios';
 
 export default function home() {
   const [isAvatar, setIsAvatar] = useState("/static/images/logo.png");
   const [userName, setUserName] = useState("user");
+  const [userDataId, setUserDataId] = useState("");
+  const [userData, setUserData] = useState([]);
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     window.location.href = "./"
+  }
+
+  const getAllData = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if(user) {
+      axios.get(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/`,).then(res => {
+        const resultData = res.data.find(val => val.data[user.data_id]);
+        const parsedData = resultData.data[user.data_id];
+        setUserData(parsedData)
+      }).catch(err => {
+        console.log(err);
+      })
+    }
   }
 
   useEffect(() => {
@@ -20,9 +37,12 @@ export default function home() {
       setIsAvatar("/static/loader/mini-loader.svg")
       if(user) {
         setIsAvatar(user.avatar);
-        setUserName(user.name);
+        setUserName(user.full_name);
+        setUserDataId(user.data_id);
       }
     }
+
+    getAllData();
     }, []);
 
 
@@ -35,7 +55,9 @@ export default function home() {
       />
       <div className="main-container">
       <Sidebar />
-      <TaskContainer />
+      <TaskContainer 
+        habitList={userData.habit}
+      />
       </div>
       <style jsx>{
         `

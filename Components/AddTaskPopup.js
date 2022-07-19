@@ -21,7 +21,7 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits}) {
 
   const handleAddNewHabit = () => {
     const habitData = {
-      name: habitName,
+      name: habitName,  
       motive: habitMotive,
       start_date: startDate,
       end_date: endDate,
@@ -34,6 +34,8 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits}) {
     } else {
       alert("Please make sure you have added all the data in all the fields");
     }
+
+    localStorage.setItem("allHabits", JSON.stringify(allHabits));
 
   }
 

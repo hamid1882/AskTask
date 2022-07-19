@@ -1,21 +1,31 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import AddTaskPopup from './AddTaskPopup'
+import OptionsBar from './OptionsBar';
 
-export default function TaskContainer() {
+export default function TaskContainer({habitList}) {
   const [isPopup, setIsPopup] = useState(false);
   const [allHabits, setAllHabits] = useState([]);
   const [isOptions, setIsOptions] = useState(false);
   const [selectedId, setSelectedId] = useState(0);
-
-
+  const [isLoading, setIsLoading] = useState(false);
+  
   const handleToggleOptions = (id) => {
     setSelectedId(id);
     setIsOptions(!isOptions);
   }
 
+  const handlePopupOpen = () => {
+    setIsPopup(true);
+  }
+
+  useEffect(() => {
+    setIsLoading(habitList ? false : true);
+    setAllHabits(habitList);
+  }, [habitList])
+
   return (
     <div className="task-container">
-      { allHabits.length > 0
+      { allHabits && allHabits.length > 0
       ? <img 
         src="/static/images/plus.svg" 
         alt="add" 
@@ -24,33 +34,27 @@ export default function TaskContainer() {
       />
       : null
       }
-      <div className={allHabits.length > 5 ? "task-bar-big"  :"task-bar"}>
+      <div className={allHabits &&  allHabits.length > 5 ? "task-bar-big"  :"task-bar"}>
+
+      {
+        isLoading ? <img src="/static/loader/new-mini-loader.svg" alt="loading" style={{width: "10em", height: "10em"}} /> : null
+      }
     {
       allHabits && allHabits.length < 1
-          ? <div className="task-container-inner">
+          ? <div  className="task-container-inner">
               <h3 className="qoute">Your Habits will determine your future</h3>
-              <img src="/static/images/plus.svg" alt="add" onClick={() => setIsPopup(true)} className="add-icon" />
+              <img src="/static/images/plus.svg" alt="add" onClick={handlePopupOpen} className="add-icon" />
               <p className="create-text">Create now</p>
             </div>  
           :
           allHabits && allHabits.map((data, idx) => (
-              <div className="task-item">
+              <div key={data.id} className="task-item">
                 { isOptions && selectedId === data.id ?
-                  <div className="options-bar">
-                  <div className="option-flex">
-                    <img className="options-icon" src="/static/images/edit.svg" alt="edit" />
-                    <text className="options-text">Edit</text>
-                  </div>
-                  <div>|</div>
-                  <div className="option-flex">
-                    <img className="options-icon" src="/static/images/delete.svg" alt="edit" />
-                    <text className="options-text">Delete</text>
-                  </div>
-                </div>
+                  <OptionsBar />
                 : null
                 }
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
-                  <p style={{background: "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px", }}>{idx + 1 }</p>
+                  <p style={{background: "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px 18px", }}>{idx + 1 }</p>
                   <h1 className="task-title">{data.name.toUpperCase()}</h1>
                 </div>
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
@@ -191,7 +195,7 @@ export default function TaskContainer() {
         }
 
         .task-item {
-          width: 98%;
+          width: 97.5%;
           height: 5em;
           background-color: #C9B8D3;
           border-radius: 30px;
@@ -232,28 +236,6 @@ export default function TaskContainer() {
           padding: 0.1em 1em; 
           background: rgba(164, 134, 181, 0.3); 
           border-radius:1em;
-        }
-
-        .options-bar {
-          width: 163px;
-          height: 26px;
-          background-color: #C9B8D3;
-          border: 1px solid #707070;
-          border-radius: 0.6em;
-          display: flex;
-          justify-content: space-around;
-          align-items: center;
-          gap: 1em;
-          padding: 0 0.5em;
-          position: absolute;
-          top: -1.9em;
-          right: 3em;
-          z-index: 2;
-        }
-
-        .option-flex {
-          display: flex;
-          gap: 0.5em;
         }
         `
       }</style>
