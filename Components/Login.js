@@ -109,7 +109,7 @@ export default function Login({isLogin, isError, username, password, isViewPassw
         font-size: 10px;
         color:rgba(255, 255, 255, 0.5);
         position: relative;
-        top: -5em;
+        top: -2em;
         left: 10em;
         cursor: pointer;
       }

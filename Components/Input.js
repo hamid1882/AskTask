@@ -7,17 +7,22 @@ export default function Input({
   name = "",
   handleInputChange = () => {},
   placeholder = "",
-  isViewPassword = "", 
-  togglePassword = () => {}
+  isViewPassword = undefined, 
+  togglePassword = () => {},
+  theme = "",
 })
+
 
 {
   return (
-    <div>
-      {value.length > 0 && <p className='input-title'>{title}</p>}
+    <div className="input-bar">
+      {
+        value.length > 0 &&
+        <p className={theme === "dark" ? 'input-title-dark' : 'input-title'}>{title}</p>
+      }
       <input 
         type={isViewPassword ? "password" : type} 
-        className="input" 
+        className={theme === 'dark' ? "input-dark" : "input" }
         onChange={(e) => handleInputChange(e, name)} 
         value={value}
         placeholder={placeholder}
@@ -31,10 +36,9 @@ export default function Input({
       {
         `
         .input-bar {
-          width: 90%;
-          margin: 1em 0em;
           text-align: left;
           color: #fff;
+          margin-bottom: -2em;
         }
   
         .input-title {
@@ -44,6 +48,14 @@ export default function Input({
           letter-spacing: 0.2em;
           color: rgba(255, 255, 255, 0.5);
         }
+
+        .input-title-dark {
+          text-align: left;
+          margin-bottom: 5px;
+          font-size: 10px;
+          letter-spacing: 0.2em;
+          color: rgba(0, 0, 0, 0.5);
+        }
   
         .input {
           width: 100%;
@@ -51,10 +63,22 @@ export default function Input({
           border-bottom: 1px solid rgba(255, 255, 255, 0.2);
           outline: none;
           shadow: none;
-          padding: 0.5em;
+          padding: 0.5em 0;
           font-style: Roboto;
           background: transparent;
           color: #fff;
+        }
+
+        .input-dark {
+          width: 100%;
+          border: none;
+          border-bottom: 1px solid rgba(112, 112, 112, 0.4);
+          outline: none;
+          shadow: none;
+          padding: 0.5em 0;
+          font-style: Roboto;
+          background: transparent;
+          color: #000;
         }
   
         .input:focus {
@@ -76,14 +100,6 @@ export default function Input({
           left: 18em;
           cursor: pointer;
         }
-  
-        .forgot-password {
-          font-size: 10px;
-          color:rgba(255, 255, 255, 0.5);
-          position: relative;
-          top: -5em;
-          left: 10em;
-          cursor: pointer;
         }`
       }
     </style>
