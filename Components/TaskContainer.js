@@ -7,23 +7,32 @@ export default function TaskContainer() {
 
   return (
     <div className="task-container">
-      <img src="/static/images/plus.svg" alt="add" onClick={() => setIsPopup(true)} className="add-floating-icon" />
+      { allHabits.length > 0
+      ? <img 
+        src="/static/images/plus.svg" 
+        alt="add" 
+        onClick={() => setIsPopup(true)} 
+        className="add-floating-icon" 
+      />
+      : null
+      }
+      <div className={allHabits.length > 5 ? "task-bar-big"  :"task-bar"}>
     {
       allHabits && allHabits.length < 1
-          ? <div className="task-container">
+          ? <div className="task-container-inner">
               <h3 className="qoute">Your Habits will determine your future</h3>
               <img src="/static/images/plus.svg" alt="add" onClick={() => setIsPopup(true)} className="add-icon" />
               <p className="create-text">Create now</p>
             </div>  
           :
           allHabits && allHabits.map((data, idx) => (
-            <div className="task-bar">
               <div className="task-item">
+                <p style={{background: "#fff"}}>{idx + 1 }</p>
                 <h1>Data rendered</h1>
               </div>
-            </div>
           ))
         }
+        </div>
         {
           isPopup ?
             <AddTaskPopup
@@ -37,7 +46,6 @@ export default function TaskContainer() {
         `
         .task-container {
           width: 100%;
-          margin: 0em 1em;
           height: 580px;
           background: #C9B8D3;
           border-radius: 30px;
@@ -47,6 +55,19 @@ export default function TaskContainer() {
           font-family: sans-serif;
           position: relative;
           padding: 1em;
+          margin: 0 1em;
+        }
+
+        .task-container-inner {
+          width: 100%;
+          height: 580px;
+          background: #C9B8D3;
+          border-radius: 30px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          font-family: sans-serif;
+          position: relative;
         }
 
         .add-floating-icon {
@@ -80,10 +101,48 @@ export default function TaskContainer() {
 
         .task-bar {
           width: 97%;
-          height: 100%;
+          height: 95%;
           border-radius: 30px;
           background-color: #A486B5;
           padding: 1em;
+          display: flex;
+          flex-direction: column;
+          gap: 1em;
+        }
+
+        .task-bar-big {
+          width: 97%;
+          height: 95%;
+          background-color: #A486B5;
+          padding: 1em;
+          display: flex;
+          flex-direction: column;
+          gap: 1em;
+          overflow-y: scroll;
+          border-top-left-radius: 30px;
+          border-bottom-left-radius: 30px;
+        }
+
+        .task-bar-big::-webkit-scrollbar {
+          width: 10px;
+          
+        }
+        
+        /* Track */
+        .task-bar-big::-webkit-scrollbar-track {
+          background: transparent;
+          border-radius: 50%;
+        }
+        
+        /* Handle */
+        .task-bar-big::-webkit-scrollbar-thumb {
+          background-color: #55445F;
+          height: 5em;
+        }
+        
+        /* Handle on hover */
+        .task-bar-big::-webkit-scrollbar-thumb:hover {
+          background: #555;
         }
 
         .task-item {
@@ -91,6 +150,9 @@ export default function TaskContainer() {
           background-color: #C9B8D3;
           border-radius: 30px;
           padding: 0.5em
+          display: flex;
+          align-items: center;
+          flex-direction: column;
         }
         `
       }</style>
