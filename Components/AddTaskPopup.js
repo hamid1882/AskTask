@@ -24,7 +24,8 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits}) {
       name: habitName,
       motive: habitMotive,
       start_date: startDate,
-      end_date: endDate
+      end_date: endDate,
+      id: allHabits.length + 1,
     }
 
     if(habitName.length > 0 && habitMotive.length > 0 && startDate.length > 0 && endDate.length > 0) {
@@ -118,9 +119,9 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits}) {
           .container {
             position: absolute;
             width: 100%;
-            margin: 0em 1em;
-            height: 610px;
-            background: rgba(201, 184, 211, 0.4);
+            margin: -1em 1em;
+            height: 612px;
+            background: rgba(0,0,0, 0.4);
             border-radius: 30px;
             display: flex;
             flex-direction: column;
@@ -129,6 +130,7 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits}) {
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 999;
           }
 
           .popup-container {
@@ -139,7 +141,7 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits}) {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 1.5em;
+            padding: 1em;
           }
 
           .cancel-icon {

@@ -76,9 +76,11 @@ export default function Input({
           outline: none;
           shadow: none;
           padding: 0.5em 0;
-          font-style: Roboto;
+          font-style: sans-serif ;
+          letter-spacing: 0.1em;
           background: transparent;
-          color: #000;
+          color: rgba(0,0,0,0.7);
+          font-weight: 550;
         }
   
         .input:focus {

@@ -4,6 +4,14 @@ import AddTaskPopup from './AddTaskPopup'
 export default function TaskContainer() {
   const [isPopup, setIsPopup] = useState(false);
   const [allHabits, setAllHabits] = useState([]);
+  const [isOptions, setIsOptions] = useState(false);
+  const [selectedId, setSelectedId] = useState(0);
+
+
+  const handleToggleOptions = (id) => {
+    setSelectedId(id);
+    setIsOptions(!isOptions);
+  }
 
   return (
     <div className="task-container">
@@ -27,8 +35,37 @@ export default function TaskContainer() {
           :
           allHabits && allHabits.map((data, idx) => (
               <div className="task-item">
-                <p style={{background: "#fff"}}>{idx + 1 }</p>
-                <h1>Data rendered</h1>
+                { isOptions && selectedId === data.id ?
+                  <div className="options-bar">
+                  <div className="option-flex">
+                    <img className="options-icon" src="/static/images/edit.svg" alt="edit" />
+                    <text className="options-text">Edit</text>
+                  </div>
+                  <div>|</div>
+                  <div className="option-flex">
+                    <img className="options-icon" src="/static/images/delete.svg" alt="edit" />
+                    <text className="options-text">Delete</text>
+                  </div>
+                </div>
+                : null
+                }
+                <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
+                  <p style={{background: "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px", }}>{idx + 1 }</p>
+                  <h1 className="task-title">{data.name.toUpperCase()}</h1>
+                </div>
+                <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
+                  <div className="input-bar">
+                    <input type="checkbox" className="checkbox" />
+                    <text style={{color: "rgba(0,0,0,0.6)"}}>Completed</text>
+                  </div>
+                  <div className="input-bar">
+                    <input type="checkbox" className="checkbox" />
+                    <text style={{color: "rgba(0,0,0,0.6)"}}>Not Completed</text>
+                  </div>
+                  <div style={{background: isOptions && data.id === selectedId && "rgba(255,255,255, 0.5)"}} className="task-toggle-options" onClick={() => handleToggleOptions(data.id)}>
+                    <img src={isOptions && data.id === selectedId ? "/static/images/uparrow.svg" :"/static/images/downarrow.svg" } onClick={() => handleToggleOptions(data.id)} alt="up" />
+                  </div>
+                </div>
               </div>
           ))
         }
@@ -78,6 +115,7 @@ export default function TaskContainer() {
           padding: 0.6em;
           border-radius: 50%;
           cursor: pointer;
+          z-index: 2;
         }
 
         .qoute {
@@ -119,6 +157,7 @@ export default function TaskContainer() {
           flex-direction: column;
           gap: 1em;
           overflow-y: scroll;
+          overflow-x: hidden;
           border-top-left-radius: 30px;
           border-bottom-left-radius: 30px;
         }
@@ -127,11 +166,17 @@ export default function TaskContainer() {
           width: 10px;
           
         }
+
+        .task-title {
+          font-family: sans-serif;
+          font-size: 20px;
+          color: rgba(0,0,0,0.5);
+          letter-spacing: 0.1em;
+        }
         
         /* Track */
         .task-bar-big::-webkit-scrollbar-track {
-          background: transparent;
-          border-radius: 50%;
+          background: rgba(255,255,255,0.7);
         }
         
         /* Handle */
@@ -146,13 +191,69 @@ export default function TaskContainer() {
         }
 
         .task-item {
-          width: 98.5%;
+          width: 98%;
+          height: 5em;
           background-color: #C9B8D3;
           border-radius: 30px;
-          padding: 0.5em
+          padding: 0.5em 1em;
           display: flex;
           align-items: center;
+          justify-content: space-between;
+          flex-direction: row;
+          cursor: pointer;
+          position: relative;
+        }
+
+        .input-bar {
+          display: flex;
           flex-direction: column;
+          align-items: center;
+        }
+
+        .checkbox {
+          padding: 1em;
+          width: 2em;
+          height: 2em;
+          cursor: pointer;
+          border: none;
+          background-color: rgba(255, 255, 255, 0.2);
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        .checkbox:hover {
+          border: 1px solid #ccf
+        }
+
+        .task-toggle-options {
+          position: relative;
+          top: -2em;
+          right: 1em;
+          margin: 0 1em;
+          padding: 0.1em 1em; 
+          background: rgba(164, 134, 181, 0.3); 
+          border-radius:1em;
+        }
+
+        .options-bar {
+          width: 163px;
+          height: 26px;
+          background-color: #C9B8D3;
+          border: 1px solid #707070;
+          border-radius: 0.6em;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          gap: 1em;
+          padding: 0 0.5em;
+          position: absolute;
+          top: -1.9em;
+          right: 3em;
+          z-index: 2;
+        }
+
+        .option-flex {
+          display: flex;
+          gap: 0.5em;
         }
         `
       }</style>

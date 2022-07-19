@@ -379,7 +379,7 @@ export default function Home() {
           cursor: pointer;
         }
 
-        .checkbox:hoveer {
+        .checkbox:hover {
           border: 1px solid #ccf
         }
 
