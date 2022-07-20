@@ -103,20 +103,7 @@ export default function LoginPage() {
                  motive: "Wanna get back into ground",
                  completed: false
                },
-             ],
-           task_manager: [
-               {
-                 name: "TaskManager",
-                 created_at: "07-07-2022",
-                 completed: false,
-                 todo: [
-                   {
-                     name: "todo-1",
-                     completed: false
-                   },
-                 ],
-              },
-            ],
+             ]
           }
         }
     axios.post("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data", {data: data}).then(res => {

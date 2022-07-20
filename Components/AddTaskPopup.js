@@ -1,7 +1,8 @@
+import axios from 'axios';
 import React, {useState} from 'react';
 import Input from "./Input.js";
 
-export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits}) {
+export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits, dataId}) {
   const [habitName, setHabitName] = useState("");
   const [habitMotive, setHabitMotive] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -20,24 +21,35 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits}) {
   }
 
   const handleAddNewHabit = () => {
+    const userId = JSON.parse(localStorage.getItem('user')).data_id;
+
+    const habitId = allHabits ? allHabits[0].id : 0;
+
     const habitData = {
       name: habitName,  
       motive: habitMotive,
       start_date: startDate,
       end_date: endDate,
-      id: allHabits.length + 1,
+      id: habitId + 1,
     }
-
+    
     if(habitName.length > 0 && habitMotive.length > 0 && startDate.length > 0 && endDate.length > 0) {
       allHabits.unshift(habitData);
+      const newData = {data : { [userId] : { habit : allHabits}} }
+      axios.put(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${dataId}`, newData).then(res => {
+        const parsedData = res.data.data[userId];
+        // setAllHabits(parsedData);
+        
+    }).catch(err => {
+        console.log("error:", err);
+    })
       setIsPopup(false);
     } else {
       alert("Please make sure you have added all the data in all the fields");
     }
 
     localStorage.setItem("allHabits", JSON.stringify(allHabits));
-
-  }
+    }
 
   return (
     <div className="container">

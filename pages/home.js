@@ -10,6 +10,7 @@ export default function home() {
   const [userName, setUserName] = useState("user");
   const [userDataId, setUserDataId] = useState("");
   const [userData, setUserData] = useState([]);
+  const [dataId, setDataId] = useState(0);
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
@@ -23,7 +24,8 @@ export default function home() {
       axios.get(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/`,).then(res => {
         const resultData = res.data.find(val => val.data[user.data_id]);
         const parsedData = resultData.data[user.data_id];
-        setUserData(parsedData)
+        setUserData(parsedData);
+        setDataId(res.data.find(val => val.data).id);
       }).catch(err => {
         console.log(err);
       })
@@ -57,6 +59,8 @@ export default function home() {
       <Sidebar />
       <TaskContainer 
         habitList={userData.habit}
+        setUserData={setUserData}
+        dataId={dataId}
       />
       </div>
       <style jsx>{

@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 
-export default function OptionsBar() {
+export default function OptionsBar({id, handleDelete, isDeleteLoading}) {
   return (
     <div className="options-bar">
       <div className="option-flex">
@@ -9,8 +9,20 @@ export default function OptionsBar() {
       </div>
       <div>|</div>
       <div className="option-flex">
-        <img className="options-icon" src="/static/images/delete.svg" alt="edit" />
-        <div className="options-text">Delete</div>
+        {!isDeleteLoading
+        ?
+          <Fragment>
+            <img className="options-icon" src="/static/images/delete.svg" alt="edit" />
+            <div 
+            className="options-text"
+            onClick={() => handleDelete(id)}
+            >Delete</div>
+          </Fragment>
+         : <img 
+            src="/static/loader/button-loader.svg" 
+            alt="loading..." 
+            style={{width: "1.6em", height: "1.6em",}} />
+        }
       </div>
       <style jsx>
         {

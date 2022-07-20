@@ -1,13 +1,15 @@
+import axios from 'axios';
 import React,{useState,useEffect} from 'react'
 import AddTaskPopup from './AddTaskPopup'
 import OptionsBar from './OptionsBar';
 
-export default function TaskContainer({habitList}) {
+export default function TaskContainer({habitList, dataId, setUserData}) {
   const [isPopup, setIsPopup] = useState(false);
   const [allHabits, setAllHabits] = useState([]);
   const [isOptions, setIsOptions] = useState(false);
   const [selectedId, setSelectedId] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   
   const handleToggleOptions = (id) => {
     setSelectedId(id);
@@ -16,6 +18,23 @@ export default function TaskContainer({habitList}) {
 
   const handlePopupOpen = () => {
     setIsPopup(true);
+  }
+
+  const handleDelete = (id) => {
+    const newHabitList =  habitList.filter(val => val.id !== id);
+    const userId = JSON.parse(localStorage.getItem('user')).data_id;
+    
+    const newData = {data : { [userId] : { habit : newHabitList}} }
+    
+    setIsDeleteLoading(true);
+    axios.put(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${dataId}`, newData).then(res => {
+      setUserData(res.data.data[userId]);
+      setIsDeleteLoading(false)
+    }).catch(err => {
+      alert("Not Able to delete, check console for more info");
+      console.log("error:", err);
+      setIsDeleteLoading(false)
+    })
   }
 
   useEffect(() => {
@@ -57,7 +76,7 @@ export default function TaskContainer({habitList}) {
           allHabits && allHabits.map((data, idx) => (
               <div key={data.id} className="task-item">
                 { isOptions && selectedId === data.id ?
-                  <OptionsBar />
+                  <OptionsBar id={data.id} handleDelete={handleDelete} isDeleteLoading={isDeleteLoading} />
                 : null
                 }
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
@@ -87,6 +106,7 @@ export default function TaskContainer({habitList}) {
             setIsPopup={setIsPopup}
             setAllHabits={setAllHabits}
             allHabits={allHabits}
+            dataId={dataId}
             />
             : null
       }
@@ -202,7 +222,7 @@ export default function TaskContainer({habitList}) {
         }
 
         .task-item {
-          width: 97.5%;
+          width: 96%;
           height: 5em;
           background-color: #C9B8D3;
           border-radius: 30px;
