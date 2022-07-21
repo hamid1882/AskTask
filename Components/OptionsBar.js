@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react'
 
-export default function OptionsBar({id, handleDelete, isDeleteLoading}) {
+export default function OptionsBar({id, handleDelete, isDeleteLoading, handleEdit}) {
   return (
     <div className="options-bar">
-      <div className="option-flex">
+      <div className="option-flex" onClick={() => handleEdit(id)}>
         <img className="options-icon" src="/static/images/edit.svg" alt="edit" />
         <div className="options-text">Edit</div>
       </div>

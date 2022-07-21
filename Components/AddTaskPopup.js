@@ -1,8 +1,9 @@
 import axios from 'axios';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Input from "./Input.js";
 
-export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits, dataId}) {
+export default function AddTaskPopup({
+  setIsPopup, allHabits, setAllHabits, dataId, editHabit, setEditHabit, isEdit, setIsEdit}) {
   const [habitName, setHabitName] = useState("");
   const [habitMotive, setHabitMotive] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -23,7 +24,7 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits, dataI
   const handleAddNewHabit = () => {
     const userId = JSON.parse(localStorage.getItem('user')).data_id;
 
-    const habitId = allHabits ? allHabits[0].id : 0;
+    const habitId = allHabits.length > 0 && allHabits[0].id ? allHabits[0].id : 0;
 
     const habitData = {
       name: habitName,  
@@ -32,10 +33,20 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits, dataI
       end_date: endDate,
       id: habitId + 1,
     }
-    
+
     if(habitName.length > 0 && habitMotive.length > 0 && startDate.length > 0 && endDate.length > 0) {
-      allHabits.unshift(habitData);
-      const newData = {data : { [userId] : { habit : allHabits}} }
+      
+      if(isEdit === true) {
+        let selectedHabit = allHabits.find(val => val.id === editHabit.id);
+        selectedHabit.name = habitName;
+        selectedHabit.motive = habitMotive;
+        selectedHabit.startDate = startDate;
+        selectedHabit.endDate = endDate; 
+      } else {
+        allHabits.unshift(habitData);
+      }
+
+      const newData = {data : { [userId] : { habit : allHabits}} };
       axios.put(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${dataId}`, newData).then(res => {
         const parsedData = res.data.data[userId];
         // setAllHabits(parsedData);
@@ -50,6 +61,17 @@ export default function AddTaskPopup({setIsPopup, allHabits, setAllHabits, dataI
 
     localStorage.setItem("allHabits", JSON.stringify(allHabits));
     }
+
+
+    useEffect(() => {
+      if(isEdit === true) {
+        setHabitName(editHabit.name);
+        setHabitMotive(editHabit.motive);
+        setStartDate(editHabit.start_date);
+        setEndDate(editHabit.end_date);
+      }
+    }, []);
+
 
   return (
     <div className="container">

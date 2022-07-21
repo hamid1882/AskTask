@@ -10,6 +10,8 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const [selectedId, setSelectedId] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  const [editHabit, setEditHabit] = useState({});
+  const [isEdit, setIsEdit] = useState(false);
   
   const handleToggleOptions = (id) => {
     setSelectedId(id);
@@ -18,6 +20,15 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
   const handlePopupOpen = () => {
     setIsPopup(true);
+    setIsEdit(false);
+  }
+
+  const handleEdit = (id) => {
+    const newHabitList =  habitList.find(val => val.id === id);
+    setEditHabit(newHabitList);
+    setIsPopup(true);
+    setIsOptions(false);
+    setIsEdit(true);
   }
 
   const handleDelete = (id) => {
@@ -29,7 +40,8 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     setIsDeleteLoading(true);
     axios.put(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${dataId}`, newData).then(res => {
       setUserData(res.data.data[userId]);
-      setIsDeleteLoading(false)
+      setIsDeleteLoading(false);
+      setIsOptions(false);
     }).catch(err => {
       alert("Not Able to delete, check console for more info");
       console.log("error:", err);
@@ -48,7 +60,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       ? <img 
         src="/static/images/plus.svg" 
         alt="add" 
-        onClick={() => setIsPopup(true)} 
+        onClick={handlePopupOpen} 
         className="add-floating-icon" 
       />
       : null
@@ -76,7 +88,12 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           allHabits && allHabits.map((data, idx) => (
               <div key={data.id} className="task-item">
                 { isOptions && selectedId === data.id ?
-                  <OptionsBar id={data.id} handleDelete={handleDelete} isDeleteLoading={isDeleteLoading} />
+                  <OptionsBar 
+                    id={data.id} 
+                    handleDelete={handleDelete} 
+                    isDeleteLoading={isDeleteLoading} 
+                    handleEdit={handleEdit}
+                  />
                 : null
                 }
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
@@ -106,7 +123,10 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
             setIsPopup={setIsPopup}
             setAllHabits={setAllHabits}
             allHabits={allHabits}
-            dataId={dataId}
+            dataId={dataId} 
+            editHabit={editHabit}
+            setEditHabit={setEditHabit}
+            isEdit={isEdit}
             />
             : null
       }
