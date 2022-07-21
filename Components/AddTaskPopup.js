@@ -6,19 +6,16 @@ export default function AddTaskPopup({
   setIsPopup, allHabits, setAllHabits, dataId, editHabit, setEditHabit, isEdit, setIsEdit}) {
   const [habitName, setHabitName] = useState("");
   const [habitMotive, setHabitMotive] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [days, setDays] = useState(21);
 
   const handleInputChange = (e, name) => {
     if(name === "name") { 
       setHabitName(e.target.value);
     } else if(name === "motive") {
       setHabitMotive(e.target.value);
-    } else if(name === "startDate") {
-      setStartDate(e.target.value);
-    } else if(name === "endDate") {
-      setEndDate(e.target.value);
-    }
+    } else if(name === "days") {
+      setDays(e.target.value);
+    } 
   }
 
   const handleAddNewHabit = () => {
@@ -26,22 +23,26 @@ export default function AddTaskPopup({
 
     const habitId = allHabits.length > 0 && allHabits[0].id ? allHabits[0].id : 0;
 
+    let dayArr = [];
+
+    for(let i=1; i<=days; i++) {
+      dayArr.push(i);
+    }
+
     const habitData = {
       name: habitName,  
       motive: habitMotive,
-      start_date: startDate,
-      end_date: endDate,
+      days: dayArr,
       id: habitId + 1,
     }
 
-    if(habitName.length > 0 && habitMotive.length > 0 && startDate.length > 0 && endDate.length > 0) {
+    if(habitName.length > 0 && habitMotive.length > 0 && days !== 0) {
       
       if(isEdit === true) {
         let selectedHabit = allHabits.find(val => val.id === editHabit.id);
         selectedHabit.name = habitName;
         selectedHabit.motive = habitMotive;
-        selectedHabit.startDate = startDate;
-        selectedHabit.endDate = endDate; 
+        selectedHabit.days = days 
       } else {
         allHabits.unshift(habitData);
       }
@@ -106,16 +107,15 @@ export default function AddTaskPopup({
           />
         </div>
         <div className="date-input-section">
-          <div className="small-title">When you start</div>
+          <div className="small-title">Select Goal</div>
           <input 
-            type="date" 
+            type="number" 
             className='date-picker'
-            onChange={(e) => handleInputChange(e, "startDate")} 
-            value={startDate}
+            onChange={(e) => handleInputChange(e, "days")} 
+            value={days}
             />
-          {/* <input type="time" className="date-picker" /> */}
         </div>
-        <div className="date-input-section">
+        {/* <div className="date-input-section">
           <div className="small-title">Set up a Goal</div>
           <input 
             type="date" 
@@ -123,8 +123,7 @@ export default function AddTaskPopup({
             onChange={(e) => handleInputChange(e, "endDate")} 
             value={endDate}
           />
-          {/* <input type="time" className="date-picker" /> */}
-        </div>
+        </div> */}
         <button 
           className="btn-dark"
           onClick={handleAddNewHabit}

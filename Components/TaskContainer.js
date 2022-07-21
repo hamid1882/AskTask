@@ -54,6 +54,8 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     setAllHabits(habitList);
   }, [habitList])
 
+
+
   return (
     <div className="task-container">
       { allHabits && allHabits.length > 0
@@ -65,7 +67,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       />
       : null
       }
-      <div className={allHabits &&  allHabits.length > 5 ? "task-bar-big"  :"task-bar"}>
+      <div className={allHabits &&  allHabits.length > 4 ? "task-bar-big"  :"task-bar"}>
 
       {
         isLoading ? 
@@ -98,16 +100,27 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                 }
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
                   <p style={{background: "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px 18px", }}>{idx + 1 }</p>
-                  <h1 className="task-title">{data.name.toUpperCase()}</h1>
+                  <div>
+                    <h1 className="task-title">{data.name.toUpperCase()}</h1>
+                    <div className="habit-progress">
+                      <p className="consistent">Consistency:</p>
+                      <div className="track-habit">
+                        {
+                          data.days && data.days.map(val => (
+                            <span>{val == 1 ? "" : "---"}({val}){val == data.days.length ? "" : "---"}</span>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
-                  <div className="input-bar">
-                    <input type="checkbox" className="checkbox" />
-                    <text style={{color: "rgba(0,0,0,0.6)"}}>Completed</text>
-                  </div>
-                  <div className="input-bar">
-                    <input type="checkbox" className="checkbox" />
-                    <text style={{color: "rgba(0,0,0,0.6)"}}>Not Completed</text>
+                  <div className="day-check">
+                    <h3 className="check-text">Day-1</h3>
+                    <div className="checkbar">
+                      <img src="/static/images/right.svg" alt="check" className='check-icon-1'/>
+                      <img src="/static/images/wrong.svg" alt="check" className='check-icon-2' />
+                    </div>
                   </div>
                   <div style={{background: isOptions && data.id === selectedId && "rgba(255,255,255, 0.5)"}} className="task-toggle-options" onClick={() => handleToggleOptions(data.id)}>
                     <img src={isOptions && data.id === selectedId ? "/static/images/uparrow.svg" :"/static/images/downarrow.svg" } onClick={() => handleToggleOptions(data.id)} alt="up" />
@@ -188,6 +201,59 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           margin-top: 1.5em;
         }
 
+        .day-check {
+          width: 12em;
+          height: 1.5em;
+          padding: 1.5em 1em;
+          background-color: rgba(255, 255, 255, 0.4);
+          border-radius: 30px;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          gap: 1.4em;
+        }
+        
+        .checkbar {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          height: 1.5em;
+          width: 4em;
+          border-radius: 30px;
+          background-color: #92618E;
+          padding: 0.4em 0.8em;
+          gap: 0.5em;
+        }
+
+        .check-text {
+          color: rgba(0,0,0,0.5);
+          letter-spacing: 0.1em;
+          font-family: monospace;
+          font-size: 18px;
+        }
+
+        .check-icon-1 {
+          width: 1.7em;
+          height: 1.8em;
+        }
+
+        .check-icon-1:hover {
+          width: 2.3em;
+          height: 2.3em;
+          transition: all 0.2s ease-in-out;
+        }
+        
+        .check-icon-2 {
+          width: 2em;
+          height: 2em;
+        }
+        
+        .check-icon-2:hover {
+          width: 2.3em;
+          height: 2.3em;
+          transition: all 0.2s ease-in-out;
+        }
+
         .task-bar {
           width: 97%;
           height: 95%;
@@ -203,19 +269,17 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           width: 97%;
           height: 95%;
           background-color: #A486B5;
-          padding: 1em;
+          padding: 2.2em 1em;
           display: flex;
           flex-direction: column;
           gap: 1em;
-          overflow-y: scroll;
-          overflow-x: hidden;
           border-top-left-radius: 30px;
           border-bottom-left-radius: 30px;
+          overflow-y: scroll;
         }
 
         .task-bar-big::-webkit-scrollbar {
           width: 10px;
-          
         }
 
         .task-title {
@@ -223,6 +287,56 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           font-size: 20px;
           color: rgba(0,0,0,0.5);
           letter-spacing: 0.1em;
+        }
+
+        .habit-progress {
+          display: flex;
+          align-items: center;
+          gap: 1em;
+          margin-top: -1em;
+          color: rgba(0,0,0,0.5);
+        }
+
+        .consistent {
+          color: rgba(0,0,0,0.5);
+        }
+
+        .track-habit {
+          width: 30em;
+          padding: 0 0 0.5em 0;
+          overflow-x: scroll;
+          margin-top: 0.6em;  
+          white-space: nowrap;
+        }
+
+        .track-habit::-webkit-scrollbar {
+          width: 5px;
+          height: 4px;
+          background:rgba(255,255,255,0.7);
+        }
+        
+        /* Track */
+        .track-habit::-webkit-scrollbar-track {
+          background: rgba(255,255,255,0.7);
+          height: 0.1em;
+          width: 5px;
+          border-radius: 30px;
+        }
+
+        .track-habit::-webkit-scrollbar-track-piece {
+          background: #A486B5;
+          
+        }
+        
+        .track-habit::-webkit-scrollbar-thumb {
+          background-color: #55445F;
+          width: 5px;
+          height: 0.1em;
+          border-radius: 30px;
+        }
+
+        .track-habit::-webkit-scrollbar-thumb:hover {
+          background: #555;
         }
         
         /* Track */
@@ -243,7 +357,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
         .task-item {
           width: 96%;
-          height: 5em;
+          height: 6em;
           background-color: #C9B8D3;
           border-radius: 30px;
           padding: 0.5em 1em;

@@ -88,22 +88,7 @@ export default function LoginPage() {
     let idx = 0;
     const data = {
         [id] : {
-          habit: [
-               {
-                 id: idx + 1,
-                 name: "Habit",
-                 created_at: "07-07-2022",
-                 motive: "Wanna get back into ground",
-                 completed: false
-               },
-               {
-                 id: idx + 2,
-                 name: "Habit",
-                 created_at: "07-07-2022",
-                 motive: "Wanna get back into ground",
-                 completed: false
-               },
-             ]
+          habit: []
           }
         }
     axios.post("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data", {data: data}).then(res => {
