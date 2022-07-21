@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect, useRef} from 'react'
 import AddTaskPopup from './AddTaskPopup'
 import OptionsBar from './OptionsBar';
 
@@ -12,6 +12,21 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [editHabit, setEditHabit] = useState({});
   const [isEdit, setIsEdit] = useState(false);
+  const [currentHabitId, setCurrentHabitId] = useState(0);
+
+  let scrollRef = useRef(null);
+
+  // const setCurrentHabitId = (id,value) => {
+  //   setCurrentHabitId(id);
+  // }
+  
+  const handleScroll = (id, value) => {
+    setCurrentHabitId(id);
+
+    if(currentHabitId === id) {
+      scrollRef.current ? scrollRef.current.scrollLeft += value : null;
+    }
+  }
   
   const handleToggleOptions = (id) => {
     setSelectedId(id);
@@ -53,8 +68,6 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     setIsLoading(habitList ? false : true);
     setAllHabits(habitList);
   }, [habitList])
-
-
 
   return (
     <div className="task-container">
@@ -104,13 +117,24 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                     <h1 className="task-title">{data.name.toUpperCase()}</h1>
                     <div className="habit-progress">
                       <p className="consistent">Consistency:</p>
-                      <div className="track-habit">
+                      <div className="track-habit" ref={data.id === currentHabitId ? scrollRef : null}>
                         {
                           data.days && data.days.map(val => (
-                            <span>{val == 1 ? "" : "---"}({val}){val == data.days.length ? "" : "---"}</span>
+                            <>
+                              <span key={val}>{val == 1 ? "" : "---"}({val}){val == data.days.length ? "" : "---"}</span>
+                            </>
                           ))
                         }
                       </div>
+                          {
+                            <img  
+                            className="right-scroll"
+                            onClick={() => handleScroll(data.id, 20)}
+                            src="/static/images/right-arrow.svg" 
+                            alt="right" 
+                            style={{height: "1.5em", width: "1.5em"}}
+                          />
+                          }
                     </div>
                   </div>
                 </div>
@@ -325,7 +349,12 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
         .track-habit::-webkit-scrollbar-track-piece {
           background: #A486B5;
-          
+        }
+
+        .track-habit::-webkit-scrollbar-corner {
+          width: 30px;
+          height: 30px;
+          background: rgba(0,0,0,0.5);
         }
         
         .track-habit::-webkit-scrollbar-thumb {
@@ -357,10 +386,10 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
         .task-item {
           width: 96%;
-          height: 6em;
+          height: 6.5em;
           background-color: #C9B8D3;
           border-radius: 30px;
-          padding: 0.5em 1em;
+          padding: 0.9em 1em;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -397,6 +426,15 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           padding: 0.1em 1em; 
           background: rgba(164, 134, 181, 0.3); 
           border-radius:1em;
+        }
+
+        .right-scroll {
+          position: absolute;
+          bottom: 0.4em;
+          right: 26em;
+          background-color: transparent;  
+          border: none;
+          cursor: pointer;
         }
         `
       }</style>
