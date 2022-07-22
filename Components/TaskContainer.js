@@ -16,7 +16,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const [selectedHabitId, setSelectedHabitId] = useState(1);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUpdatingFailed, setIsUpdatingFailed] = useState(false);
-  const [isChecked, setIsChecked] = useState(0);
+  const [isSelectedHabitDay, setSelectedHabitDay] = useState(1);
 
   let scrollRef = useRef(null);
 
@@ -31,12 +31,16 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const handleToggleOptions = (id) => {
     setSelectedId(id);
     setIsOptions(!isOptions);
-    setSelectedHabitId(1)
+    const selectedHabit = habitList.find(val => val.id === id);
+    const selectedHabitDate = selectedHabit && selectedHabitId && selectedHabit.days.find(val => val.checked === false).value;
+    setSelectedHabitId(selectedHabitDate);
   }
 
   const handleStart = (id) => {
+    const selectedHabit = habitList.find(val => val.id === id);
+    const selectedHabitDate = selectedHabit && selectedHabitId && selectedHabit.days.find(val => val.checked === false).value;
     setSelectedId(id);
-    setSelectedHabitId(1);
+    setSelectedHabitId(selectedHabitDate);
   }
 
   const handlePopupOpen = () => {
@@ -71,26 +75,31 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   }
   
   const handleHabitStatus = (status, id) => {
-    const selectedHabit = habitList.find(val => val.id === id);
-    const selectedHabitDate = selectedHabit && selectedHabit.days.find(val => val.value === selectedHabitId);
 
     if(status === true) {
-      setIsUpdating(true);
-  
+      setIsUpdating(true);  
     }
-
+    
     if(status === false) {
       setIsUpdatingFailed(true);
     }
-
+    
     setSelectedId(id);
-
+    
+    const selectedHabit = habitList.find(val => val.id === id);
+    const selectedHabitDate = selectedHabit && selectedHabitId && selectedHabit.days.find(val => val.value === selectedHabitId);
     const userId = JSON.parse(localStorage.getItem('user')).id;
     const userDataId = JSON.parse(localStorage.getItem('user')).data_id;
 
-    selectedHabitDate.isCompleted = status === true ? true : false;
-    selectedHabitDate.isUpcoming = status === true ? false : true;
-    selectedHabitDate.checked = true;
+    if(selectedHabitDate) {
+      selectedHabitDate.isCompleted = status === true ? true : false;
+      selectedHabitDate.isUpcoming = status === true ? false : true;
+      selectedHabitDate.checked = true;
+    }
+
+    if(selectedHabitDate && selectedHabitDate.scroll === 60) {
+      handleScroll(id, 60);
+    } 
 
     const newData = {data : { [userDataId] : { habit : habitList }} };
 
@@ -112,18 +121,6 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       setSelectedHabitId(value);
       setSelectedId(id);
     }
-
-    // const getAllHabits = () => {
-    //   const userDataId = JSON.parse(localStorage.getItem('user')).data_id;
-    //   const userId = JSON.parse(localStorage.getItem('user')).id;
-
-    //   axios.get(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${userId}`).then(res => {
-    //     const parsedData = res.data.data[userDataId].habit
-    //     setAllHabits(parsedData);
-    //   }).catch(err => {
-    //       console.log("error:", err);
-    //   })
-    // }
 
   useEffect(() => {
     setIsLoading(habitList ? false : true);
@@ -189,7 +186,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                                 {val.value == 1 ? "" : 
                                 <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}
                                 <span 
-                                onClick={() => handleCheckDay(data.id,val.value)}
+                                onClick={() => val.isChecked === true && handleCheckDay(data.id, val.value)}
                                 className={[selectedHabitId === val.value && data.id === selectedId ? "day-value, currentBorder" : "day-value", val.checked ? val.isCompleted ? "habit-done, habit-count-bg-done" : "habit-missed, habit-count-bg-missed" : "habit-upcoming"].join(" ")}>{val.value}</span>
                                 {val.value == data.days.length ? "" : 
                                 <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}

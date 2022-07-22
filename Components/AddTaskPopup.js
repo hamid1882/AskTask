@@ -25,12 +25,15 @@ export default function AddTaskPopup({
 
     let dayArr = [];
 
+    let scroll = [];
+
     for(let i=1; i<=days; i++) {
       dayArr.push({
         value: i,
         isCompleted: false,
         isUpcoming: true,
         checked: false,
+        scroll:  i >= 6 ? 60 * 1 : 0,
       });
     }
 
@@ -40,6 +43,7 @@ export default function AddTaskPopup({
       days: dayArr,
       id: habitId + 1,
       totalDays: days,
+      scroll: scroll,
     }
 
     if(habitName.length > 0 && habitMotive.length > 0 && days !== 0) {
@@ -74,8 +78,7 @@ export default function AddTaskPopup({
       if(isEdit === true) {
         setHabitName(editHabit.name);
         setHabitMotive(editHabit.motive);
-        setStartDate(editHabit.start_date);
-        setEndDate(editHabit.end_date);
+        setDays(editHabit.days);
       }
     }, []);
 
