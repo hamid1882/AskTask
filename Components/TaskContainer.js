@@ -16,6 +16,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const [selectedHabitId, setSelectedHabitId] = useState(1);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUpdatingFailed, setIsUpdatingFailed] = useState(false);
+  const [totalDaysGoal, setTotalDaysGoal] = useState(0);
 
   let scrollRef = useRef(null);
 
@@ -30,6 +31,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const handleToggleOptions = (id) => {
     setSelectedId(id);
     setIsOptions(!isOptions);
+    setSelectedHabitId(1)
   }
 
   const handlePopupOpen = () => {
@@ -74,6 +76,11 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
     setSelectedId(id);
 
+    // No.of Total day              10
+    // No. of Total days Success    5
+    // No. of Total days Failed     5
+
+
     const selectedHabit = habitList.find(val => val.id === id);
     const selectedHabitDate = selectedHabit && selectedHabit.days.find(val => val.value === selectedHabitId);
     const userId = JSON.parse(localStorage.getItem('user')).id;
@@ -96,7 +103,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       setIsUpdatingFailed(false);
     })
       setIsPopup(false);
-    } 
+    }
 
     const handleCheckDay = (id, value) => {
       setSelectedHabitId(value);
@@ -169,6 +176,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                     <h1 className="task-title">{data.name.toUpperCase()}</h1>
                     <div className="habit-progress">
                       <div 
+                      style={{zIndex: "2"}}
                         className={data.days.length >= 6 
                           ? ["track-habit", "track-habit-padding-lg"].join(" ") 
                           : 'track-habit-limit'} ref={data.id === currentHabitId ? scrollRef : null}>
@@ -189,22 +197,22 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                           {
                             data.days.length > 10 ?
                             <div className="pagination">
-                              {
-                                <img  
-                                className="left-scroll"
-                                onClick={() => handleScroll(data.id, -60)}
-                                src="/static/images/left-arrow.svg" 
-                                alt="left"
-                                style={{height: "1.5em", width: "1.5em",}}
-                              />
-                              }
                               <img  
                                 className="right-scroll"
                                 onClick={() => handleScroll(data.id, 60)}
                                 src="/static/images/right-arrow.svg" 
                                 alt="right" 
                                 style={{height: "1.5em", width: "1.5em"}}
-                              />
+                                />
+                              {
+                                <img  
+                                  className="left-scroll"
+                                  onClick={() => handleScroll(data.id, -60)}
+                                  src="/static/images/left-arrow.svg" 
+                                  alt="left"
+                                  style={{height: "1.5em", width: "1.5em",}}
+                                />
+                              }
                           </div>
                           : null
                           }
@@ -212,11 +220,13 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                   </div>
                 </div>
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
-                  <div className="day-check">
+                  <div onClick={() => setSelectedId(data.id)} className="day-check">
                     <h3 className="check-text">Day-{selectedId === data.id ? selectedHabitId : 1}</h3>
-                    <div className="checkbar">
+                    {
+                      data.id === selectedId ?
+                      <div className="checkbar">
                       {
-                        !isUpdating && data.id === selectedId
+                        !isUpdating 
                         ?
                         <img 
                         src="/static/images/right.svg" 
@@ -225,18 +235,15 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                         onClick={() => handleHabitStatus(true, data.id)}
                         />
                         :
-                        data.id === selectedId
-                        ?
                         <img 
                           src="/static/loader/new-loader.svg" 
                           alt="check" 
                           className='check-icon-1'
                           style={{width: "25px", height: "25px"}}
                         />
-                      : null
                       }
                       {
-                        !isUpdatingFailed && data.id === selectedId
+                        !isUpdatingFailed
                         ?
                         <img 
                         src="/static/images/wrong.svg" 
@@ -245,20 +252,23 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                         onClick={() => handleHabitStatus(false, data.id)}
                       />
                       :
-                      data.id === selectedId
-                        ?
                         <img 
                           src="/static/loader/new-loader.svg" 
                           alt="check" 
                           className='check-icon-1'
                           style={{width: "25px", height: "25px"}}
                         />
-                        : null
                       }
                     </div>
+                    : null
+                    }
                   </div>
-                  <div style={{background: isOptions && data.id === selectedId && "rgba(255,255,255, 0.5)"}} className="task-toggle-options" onClick={() => handleToggleOptions(data.id)}>
-                    <img src={isOptions && data.id === selectedId ? "/static/images/uparrow.svg" :"/static/images/downarrow.svg" } onClick={() => handleToggleOptions(data.id)} alt="up" />
+                  <div 
+                    style={{background: isOptions && data.id === selectedId && "rgba(255,255,255, 0.5)"}} 
+                    className="task-toggle-options" onClick={() => handleToggleOptions(data.id)}>
+                    <img 
+                    src={isOptions && data.id === selectedId ? "/static/images/uparrow.svg" :"/static/images/downarrow.svg" }
+                    onClick={() => handleToggleOptions(data.id)} alt="up" />
                   </div>
                 </div>
               </div>
@@ -337,7 +347,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
         }
 
         .day-check {
-          width: 12em;
+          width: 13.5em;
           height: 1.5em;
           padding: 1.5em 1em;
           background-color: rgba(255, 255, 255, 0.4);
@@ -422,6 +432,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           font-size: 20px;
           color: rgba(0,0,0,0.5);
           letter-spacing: 0.1em;
+          margin-top: 1em;
         }
 
         .habit-progress {
@@ -452,7 +463,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
         
         .track-habit-limit {
           width: 32em;
-          padding: 0.4em 0 0.5em 0;
+          padding: 0.4em 1em 0.5em 0;
           margin-top: 0.6em; 
           white-space: nowrap;
         }
@@ -510,10 +521,10 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
         .task-item {
           width: 96%;
-          height: 6.5em;
+          height: 6em;
           background-color: #C9B8D3;
           border-radius: 30px;
-          padding: 0.9em 1em;
+          padding: 1em 1em;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -553,17 +564,23 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
         }
 
         .pagination {
+          position: relative;
+          top: -1.15em;
+          right: -3.5em;
           width: 100%;
           display: flex;
-          justify-content: space-between;
+          justify-content: flex-end;
           align-items: center;
           height: 1em;
           margin-top: -1em;
           padding: 0.5em 0;
+          gap: 2em;
         }
 
         .right-scroll {
           padding: 0.2em;
+          position: relative;
+          right: -2em;
         }
         
         .left-scroll {
