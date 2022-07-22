@@ -13,13 +13,10 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const [editHabit, setEditHabit] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [currentHabitId, setCurrentHabitId] = useState(0);
+  const [selectedHabitId, setSelectedHabitId] = useState(0);
 
   let scrollRef = useRef(null);
 
-  // const setCurrentHabitId = (id,value) => {
-  //   setCurrentHabitId(id);
-  // }
-  
   const handleScroll = (id, value) => {
     setCurrentHabitId(id);
 
@@ -64,8 +61,50 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     })
   }
 
+  const handleHabitStatus = (status, id) => {
+
+    setSelectedId(id);
+
+    const selectedHabit = habitList.find(val => val.id === id);
+    const selectedHabitDate = selectedHabit && selectedHabit.days.find(val => val.value === selectedHabitId);
+    const userId = JSON.parse(localStorage.getItem('user')).id;
+    const userDataId = JSON.parse(localStorage.getItem('user')).data_id;
+
+    selectedHabitDate.isCompleted = status === true ? true : false;
+    selectedHabitDate.isUpcoming = status === true ? false : true;
+    selectedHabitDate.checked = true;
+
+    const newData = {data : { [userDataId] : { habit : habitList }} };
+
+    axios.put(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${userId}`, newData).then(res => {
+      const parsedData = res.data.data[userDataId].habit
+      setAllHabits(parsedData);
+    }).catch(err => {
+        console.log("error:", err);
+    })
+      setIsPopup(false);
+    } 
+
+    const handleCheckDay = (id, value) => {
+      setSelectedHabitId(value);
+      setSelectedId(id);
+    }
+
+    // const getAllHabits = () => {
+    //   const userDataId = JSON.parse(localStorage.getItem('user')).data_id;
+    //   const userId = JSON.parse(localStorage.getItem('user')).id;
+
+    //   axios.get(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${userId}`).then(res => {
+    //     const parsedData = res.data.data[userDataId].habit
+    //     setAllHabits(parsedData);
+    //   }).catch(err => {
+    //       console.log("error:", err);
+    //   })
+    // }
+
   useEffect(() => {
     setIsLoading(habitList ? false : true);
+    // getAllHabits();
     setAllHabits(habitList);
   }, [habitList])
 
@@ -116,34 +155,65 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                   <div>
                     <h1 className="task-title">{data.name.toUpperCase()}</h1>
                     <div className="habit-progress">
-                      <p className="consistent">Consistency:</p>
-                      <div className="track-habit" ref={data.id === currentHabitId ? scrollRef : null}>
+                      <div 
+                        className={data.days.length >= 6 
+                          ? ["track-habit", "track-habit-padding-lg"].join(" ") 
+                          : 'track-habit-limit'} ref={data.id === currentHabitId ? scrollRef : null}>
                         {
                           data.days && data.days.map(val => (
-                            <>
-                              <span key={val}>{val == 1 ? "" : "---"}({val}){val == data.days.length ? "" : "---"}</span>
-                            </>
+                              <span className="progress-icon" key={val.value}>
+                                {val.value == 1 ? "" : 
+                                <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}
+                                <span 
+                                onClick={() => handleCheckDay(data.id,val.value)}
+                                className={["day-value", val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"].join(" ")}>{val.value}</span>
+                                {val.value == data.days.length ? "" : 
+                                <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}
+                              </span>
                           ))
                         }
                       </div>
                           {
-                            <img  
-                            className="right-scroll"
-                            onClick={() => handleScroll(data.id, 20)}
-                            src="/static/images/right-arrow.svg" 
-                            alt="right" 
-                            style={{height: "1.5em", width: "1.5em"}}
-                          />
+                            data.days.length > 10 ?
+                            <div className="pagination">
+                              {
+                                <img  
+                                className="left-scroll"
+                                onClick={() => handleScroll(data.id, -60)}
+                                src="/static/images/left-arrow.svg" 
+                                alt="left"
+                                style={{height: "1.5em", width: "1.5em",}}
+                              />
+                              }
+                              <img  
+                                className="right-scroll"
+                                onClick={() => handleScroll(data.id, 60)}
+                                src="/static/images/right-arrow.svg" 
+                                alt="right" 
+                                style={{height: "1.5em", width: "1.5em"}}
+                              />
+                          </div>
+                          : null
                           }
                     </div>
                   </div>
                 </div>
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
                   <div className="day-check">
-                    <h3 className="check-text">Day-1</h3>
+                    <h3 className="check-text">Day-{selectedId === data.id ? selectedHabitId : 0}</h3>
                     <div className="checkbar">
-                      <img src="/static/images/right.svg" alt="check" className='check-icon-1'/>
-                      <img src="/static/images/wrong.svg" alt="check" className='check-icon-2' />
+                      <img 
+                        src="/static/images/right.svg" 
+                        alt="check" 
+                        className='check-icon-1'
+                        onClick={() => handleHabitStatus(true, data.id)}
+                      />
+                      <img 
+                        src="/static/images/wrong.svg" 
+                        alt="check" 
+                        className='check-icon-2' 
+                        onClick={() => handleHabitStatus(false, data.id)}
+                      />
                     </div>
                   </div>
                   <div style={{background: isOptions && data.id === selectedId && "rgba(255,255,255, 0.5)"}} className="task-toggle-options" onClick={() => handleToggleOptions(data.id)}>
@@ -315,6 +385,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
         .habit-progress {
           display: flex;
+          flex-direction: column;
           align-items: center;
           gap: 1em;
           margin-top: -1em;
@@ -323,13 +394,25 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
         .consistent {
           color: rgba(0,0,0,0.5);
+          text-size: 12px;
+          margin-top: -0.7em;
         }
 
         .track-habit {
-          width: 30em;
-          padding: 0 0 0.5em 0;
+          width: 32em;
           overflow-x: scroll;
-          margin-top: 0.6em;  
+          margin-top: 0.3em;  
+          white-space: nowrap;
+        }
+
+        .track-habit-padding-lg {
+          padding: 1em 0 0.7em 0;
+        }
+        
+        .track-habit-limit {
+          width: 32em;
+          padding: 0.4em 0 0.5em 0;
+          margin-top: 0.6em; 
           white-space: nowrap;
         }
 
@@ -428,13 +511,45 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           border-radius:1em;
         }
 
+        .pagination {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 1em;
+          margin-top: -1em;
+          padding: 0.5em 0;
+        }
+
         .right-scroll {
-          position: absolute;
-          bottom: 0.4em;
-          right: 26em;
-          background-color: transparent;  
-          border: none;
-          cursor: pointer;
+          padding: 0.2em;
+        }
+        
+        .left-scroll {
+          transform: rotate(180deg);;
+          padding: 0.2em;
+        }
+
+        .day-value {
+          background: rgba(255,255,255,0.6);
+          padding: 0.33em 0.55em;
+          border-radius: 50%;
+        }
+
+        .habit-done {
+          color: darkgreen;
+          font-weight: bold;
+        }
+
+        .habit-missed {
+          color: red;
+          font-weight: bold;
+        }
+
+        .habit-upcoming {
+          color: gray;
+          font-weight: bold;
+          opacity: 0.7;
         }
         `
       }</style>

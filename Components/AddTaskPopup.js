@@ -26,7 +26,12 @@ export default function AddTaskPopup({
     let dayArr = [];
 
     for(let i=1; i<=days; i++) {
-      dayArr.push(i);
+      dayArr.push({
+        value: i,
+        isCompleted: false,
+        isUpcoming: true,
+        checked: false,
+      });
     }
 
     const habitData = {
@@ -42,7 +47,7 @@ export default function AddTaskPopup({
         let selectedHabit = allHabits.find(val => val.id === editHabit.id);
         selectedHabit.name = habitName;
         selectedHabit.motive = habitMotive;
-        selectedHabit.days = days 
+        selectedHabit.days = days;
       } else {
         allHabits.unshift(habitData);
       }
