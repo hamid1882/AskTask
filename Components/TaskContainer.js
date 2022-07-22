@@ -16,7 +16,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const [selectedHabitId, setSelectedHabitId] = useState(1);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUpdatingFailed, setIsUpdatingFailed] = useState(false);
-  const [totalDaysGoal, setTotalDaysGoal] = useState(0);
+  const [isChecked, setIsChecked] = useState(0);
 
   let scrollRef = useRef(null);
 
@@ -32,6 +32,11 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     setSelectedId(id);
     setIsOptions(!isOptions);
     setSelectedHabitId(1)
+  }
+
+  const handleStart = (id) => {
+    setSelectedId(id);
+    setSelectedHabitId(1);
   }
 
   const handlePopupOpen = () => {
@@ -64,10 +69,14 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       setIsDeleteLoading(false)
     })
   }
-
+  
   const handleHabitStatus = (status, id) => {
+    const selectedHabit = habitList.find(val => val.id === id);
+    const selectedHabitDate = selectedHabit && selectedHabit.days.find(val => val.value === selectedHabitId);
+
     if(status === true) {
       setIsUpdating(true);
+  
     }
 
     if(status === false) {
@@ -76,13 +85,6 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
     setSelectedId(id);
 
-    // No.of Total day              10
-    // No. of Total days Success    5
-    // No. of Total days Failed     5
-
-
-    const selectedHabit = habitList.find(val => val.id === id);
-    const selectedHabitDate = selectedHabit && selectedHabit.days.find(val => val.value === selectedHabitId);
     const userId = JSON.parse(localStorage.getItem('user')).id;
     const userDataId = JSON.parse(localStorage.getItem('user')).data_id;
 
@@ -97,6 +99,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       setAllHabits(parsedData);
       setIsUpdating(false);
       setIsUpdatingFailed(false);
+      setSelectedHabitId(selectedHabitId + 1);
     }).catch(err => {
         console.log("error:", err);
       setIsUpdating(false);
@@ -187,7 +190,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                                 <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}
                                 <span 
                                 onClick={() => handleCheckDay(data.id,val.value)}
-                                className={["day-value", val.checked ? val.isCompleted ? "habit-done, habit-count-bg-done" : "habit-missed, habit-count-bg-missed" : "habit-upcoming"].join(" ")}>{val.value}</span>
+                                className={[selectedHabitId === val.value && data.id === selectedId ? "day-value, currentBorder" : "day-value", val.checked ? val.isCompleted ? "habit-done, habit-count-bg-done" : "habit-missed, habit-count-bg-missed" : "habit-upcoming"].join(" ")}>{val.value}</span>
                                 {val.value == data.days.length ? "" : 
                                 <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}
                               </span>
@@ -195,7 +198,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                         }
                       </div>
                           {
-                            data.days.length > 10 ?
+                            data.days.length >= 10 ?
                             <div className="pagination">
                               <img  
                                 className="right-scroll"
@@ -204,6 +207,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                                 alt="right" 
                                 style={{height: "1.5em", width: "1.5em"}}
                                 />
+                                <h3>{data.days.filter(val => val.checked === true).length}/{data.totalDays}</h3>
                               {
                                 <img  
                                   className="left-scroll"
@@ -214,16 +218,27 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                                 />
                               }
                           </div>
-                          : null
+                          : <div 
+                            className="pagination-pre">
+                              <h3>{data.days.filter(val => val.checked === true).length}/{data.totalDays}</h3>
+                            </div>
                           }
                     </div>
                   </div>
                 </div>
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
-                  <div onClick={() => setSelectedId(data.id)} className="day-check">
-                    <h3 className="check-text">Day-{selectedId === data.id ? selectedHabitId : 1}</h3>
-                    {
-                      data.id === selectedId ?
+                  <div className="day-check">
+                    <h3 className="check-text" 
+                      onClick={() => handleStart(data.id)}>
+                        {
+                          selectedId === data.id 
+                          ?`Day-${selectedHabitId}` 
+                          : "Start"
+                        }
+                    </h3>
+                    { 
+                      data.id === selectedId
+                      ?
                       <div className="checkbar">
                       {
                         !isUpdating 
@@ -566,7 +581,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
         .pagination {
           position: relative;
           top: -1.15em;
-          right: -3.5em;
+          right: -6.6em;
           width: 100%;
           display: flex;
           justify-content: flex-end;
@@ -575,6 +590,30 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           margin-top: -1em;
           padding: 0.5em 0;
           gap: 2em;
+          text-align: center;
+        }
+
+        .currentBorder {
+          border: 2px solid gold;
+          background: rgba(255,255,255,0.6);
+          padding: 0.33em 0.55em;
+          border-radius: 50%;
+          color: white;
+        }
+        
+        .pagination-pre {
+          position: relative;
+          top: -1.15em;
+          right: -2.3em;
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          height: 1em;
+          margin-top: -1em;
+          padding: 0.5em 0;
+          gap: 2em;
+
         }
 
         .right-scroll {
@@ -586,6 +625,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
         .left-scroll {
           transform: rotate(180deg);;
           padding: 0.2em;
+          margin-left: -2em;
         }
 
         .day-value {
