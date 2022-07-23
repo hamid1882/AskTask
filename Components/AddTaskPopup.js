@@ -44,6 +44,7 @@ export default function AddTaskPopup({
       id: habitId + 1,
       totalDays: days,
       scroll: scroll,
+      taskCompleted: false,
     }
 
     if(habitName.length > 0 && habitMotive.length > 0 && days !== 0) {

@@ -2,6 +2,7 @@ import axios from 'axios';
 import React,{useState,useEffect, useRef} from 'react'
 import AddTaskPopup from './AddTaskPopup'
 import OptionsBar from './OptionsBar';
+import TaskTracker from './TaskTracker';
 
 export default function TaskContainer({habitList, dataId, setUserData}) {
   const [isPopup, setIsPopup] = useState(false);
@@ -17,6 +18,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUpdatingFailed, setIsUpdatingFailed] = useState(false);
   const [isSelectedHabitDay, setSelectedHabitDay] = useState(1);
+  const [isAllChecked, setIsAllChecked] = useState(false);
 
   let scrollRef = useRef(null);
 
@@ -40,7 +42,15 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     const selectedHabit = habitList.find(val => val.id === id);
     const selectedHabitDate = selectedHabit && selectedHabitId && selectedHabit.days.find(val => val.checked === false).value;
     setSelectedId(id);
-    setSelectedHabitId(selectedHabitDate);
+
+    const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
+
+    if(checkIsAllChecked.length === 0 ) {
+      setIsAllChecked(true);
+    } else {
+      setIsAllChecked(false);
+      // setSelectedHabitId(selectedHabitDate);
+    }
   }
 
   const handlePopupOpen = () => {
@@ -86,10 +96,21 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     
     setSelectedId(id);
     
-    const selectedHabit = habitList.find(val => val.id === id);
+    const selectedHabit = habitList.find(val => val.id === id); 
+
+    const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
+
+    if(checkIsAllChecked.length === 0 ) {
+      setIsAllChecked(true);
+    } else {
+      setIsAllChecked(false);
+    }
+
+
     const selectedHabitDate = selectedHabit && selectedHabitId && selectedHabit.days.find(val => val.value === selectedHabitId);
     const userId = JSON.parse(localStorage.getItem('user')).id;
     const userDataId = JSON.parse(localStorage.getItem('user')).data_id;
+
 
     if(selectedHabitDate) {
       selectedHabitDate.isCompleted = status === true ? true : false;
@@ -167,6 +188,8 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                     handleDelete={handleDelete} 
                     isDeleteLoading={isDeleteLoading} 
                     handleEdit={handleEdit}
+                    currentHabitId={currentHabitId} 
+                    scrollRef={scrollRef}
                   />
                 : null
                 }
@@ -174,57 +197,20 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                   <p style={{background: "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px 18px", }}>{idx + 1 }</p>
                   <div>
                     <h1 className="task-title">{data.name.toUpperCase()}</h1>
-                    <div className="habit-progress">
-                      <div 
-                      style={{zIndex: "2"}}
-                        className={data.days.length >= 6 
-                          ? ["track-habit", "track-habit-padding-lg"].join(" ") 
-                          : 'track-habit-limit'} ref={data.id === currentHabitId ? scrollRef : null}>
-                        {
-                          data.days && data.days.map(val => (
-                              <span className="progress-icon" key={val.value}>
-                                {val.value == 1 ? "" : 
-                                <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}
-                                <span 
-                                onClick={() => val.isChecked === true && handleCheckDay(data.id, val.value)}
-                                className={[selectedHabitId === val.value && data.id === selectedId ? "day-value, currentBorder" : "day-value", val.checked ? val.isCompleted ? "habit-done, habit-count-bg-done" : "habit-missed, habit-count-bg-missed" : "habit-upcoming"].join(" ")}>{val.value}</span>
-                                {val.value == data.days.length ? "" : 
-                                <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}
-                              </span>
-                          ))
-                        }
-                      </div>
-                          {
-                            data.days.length >= 10 ?
-                            <div className="pagination">
-                              <img  
-                                className="right-scroll"
-                                onClick={() => handleScroll(data.id, 60)}
-                                src="/static/images/right-arrow.svg" 
-                                alt="right" 
-                                style={{height: "1.5em", width: "1.5em"}}
-                                />
-                                <h3>{data.days.filter(val => val.checked === true).length}/{data.totalDays}</h3>
-                              {
-                                <img  
-                                  className="left-scroll"
-                                  onClick={() => handleScroll(data.id, -60)}
-                                  src="/static/images/left-arrow.svg" 
-                                  alt="left"
-                                  style={{height: "1.5em", width: "1.5em",}}
-                                />
-                              }
-                          </div>
-                          : <div 
-                            className="pagination-pre">
-                              <h3>{data.days.filter(val => val.checked === true).length}/{data.totalDays}</h3>
-                            </div>
-                          }
-                    </div>
+                    <TaskTracker 
+                      data={data}
+                      selectedHabitId={selectedHabitId}
+                      selectedId={selectedId}
+                      handleScroll={handleScroll}
+                      currentHabitId={currentHabitId}
+                      scrollRef={scrollRef}
+                    />
                   </div>
                 </div>
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
                   <div className="day-check">
+                    {
+                      !isAllChecked ?
                     <h3 className="check-text" 
                       onClick={() => handleStart(data.id)}>
                         {
@@ -233,6 +219,9 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                           : "Start"
                         }
                     </h3>
+                    :
+                    <h3 className="check-text">Completed</h3>
+                    }
                     { 
                       data.id === selectedId
                       ?
