@@ -20,6 +20,7 @@ export default function AddTaskPopup({
 
   const handleAddNewHabit = () => {
     const userId = JSON.parse(localStorage.getItem('user')).data_id;
+    const id = JSON.parse(localStorage.getItem('user')).id;
 
     const habitId = allHabits.length > 0 && allHabits[0].id ? allHabits[0].id : 0;
 
@@ -59,7 +60,8 @@ export default function AddTaskPopup({
       }
 
       const newData = {data : { [userId] : { habit : allHabits}} };
-      axios.put(process.env.NEXT_PUBLIC_URL + "/" + dataId, newData).then(res => {
+
+      axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + id, newData).then(res => {
         const parsedData = res.data.data[userId];
         // setAllHabits(parsedData);
         
@@ -125,6 +127,7 @@ export default function AddTaskPopup({
             />
         </div>
         <button 
+          disabled={isEdit}
           className="btn-dark"
           onClick={handleAddNewHabit}
           >Create Now</button>

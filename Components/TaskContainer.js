@@ -39,9 +39,9 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
   const handleStart = (id) => {
     const selectedHabit = habitList.find(val => val.id === id);
-    const selectedHabitDate = selectedHabit.days.find(val => val.checked === false);
+    const selectedHabitDate = id && selectedHabit.days.find(val => val.checked === false);
     setSelectedId(id);
-    setSelectedHabitDay(selectedHabitDate.value);
+    selectedHabitDate && setSelectedHabitDay(selectedHabitDate.value);
 
     const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
 
@@ -58,8 +58,8 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   }
 
   const handleEdit = (id) => {
-    const newHabitList =  habitList.find(val => val.id === id);
-    setEditHabit(newHabitList);
+    // const newHabitList =  habitList.find(val => val.id === id);
+    // setEditHabit(newHabitList);
     setIsPopup(true);
     setIsOptions(false);
     setIsEdit(true);
@@ -72,7 +72,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     const newData = {data : { [userId] : { habit : newHabitList}} }
     
     setIsDeleteLoading(true);
-    axios.put(process.env.NEXT_PUBLIC_URL + "/" + dataId, newData).then(res => {
+    axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + dataId, newData).then(res => {
       setUserData(res.data.data[userId]);
       setIsDeleteLoading(false);
       setIsOptions(false);
@@ -124,9 +124,11 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       return a.taskCompleted - b.taskCompleted;
     });
 
+    setAllHabits(sortedData);
+
     const newData = {data : { [userDataId] : { habit : sortedData }} };
 
-    axios.put(process.env.NEXT_PUBLIC_URL + "/" + userId, newData).then(res => {
+    axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + userId, newData).then(res => {
       const parsedData = res.data.data[userDataId].habit;
 
       setAllHabits(parsedData);
