@@ -38,7 +38,7 @@ export default function Topbar({userName, isAvatar, handleLogout}) {
             src="/static/images/logo.png" 
             alt="icon" 
             style={{height: "3em", width: "3em", opacity: "0.7"}} />
-          <h2 className="title">Habit Tracker</h2>
+          <h2 className="title">#AskTask</h2>
         </div>
         <div className="flex-1">
           <div className="top-text-bar">

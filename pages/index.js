@@ -5,12 +5,12 @@ export default function Home() {
   return (
     <div className='main'>
       <Head>
-        <title>Task Manager - Login</title>
+        <title>AskTask - Login</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="top-bar">
         <img src="/static/images/logo.png" alt="logo" className="logo" style={{height: "5em", width: "5em"}} />
-        <span className="title" style={{fontSize: "46px"}}>Habit Tracker</span>
+        <span className="title" style={{fontSize: "46px"}}>#AskTask</span>
       </div>
       <div className="user-login-container">
         <LoginPage />
