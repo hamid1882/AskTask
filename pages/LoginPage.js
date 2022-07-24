@@ -20,7 +20,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const getAllUsers = () => {
-    axios.get("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/users").then(res => {
+    axios.get(process.env.NEXT_PUBLIC_URL + "/users").then(res => {
       setUsers(res.data)
     }).catch(err => {
       console.log(err);
@@ -91,8 +91,8 @@ export default function LoginPage() {
           habit: []
           }
         }
-    axios.post("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data", {data: data}).then(res => {
-        console.log(res.data);
+    axios.post(process.env.NEXT_PUBLIC_URL + "/data", {data: data}).then(res => {
+        // console.log(res.data);
       }).catch(err => {
         console.log(err);
       })
@@ -115,7 +115,7 @@ export default function LoginPage() {
         data_id: username+123
       }
 
-      axios.post("https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/users", data).then(res => {
+      axios.post(process.env.NEXT_PUBLIC_URL +"/users", data).then(res => {
         users.push(res.data)
         setIsSignup(false);
         setUserName("");

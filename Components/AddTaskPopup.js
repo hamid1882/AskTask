@@ -59,7 +59,7 @@ export default function AddTaskPopup({
       }
 
       const newData = {data : { [userId] : { habit : allHabits}} };
-      axios.put(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${dataId}`, newData).then(res => {
+      axios.put(process.env.NEXT_PUBLIC_URL + "/" + dataId, newData).then(res => {
         const parsedData = res.data.data[userId];
         // setAllHabits(parsedData);
         
@@ -73,7 +73,6 @@ export default function AddTaskPopup({
 
     localStorage.setItem("allHabits", JSON.stringify(allHabits));
     }
-
 
     useEffect(() => {
       if(isEdit === true) {
@@ -125,15 +124,6 @@ export default function AddTaskPopup({
             value={days}
             />
         </div>
-        {/* <div className="date-input-section">
-          <div className="small-title">Set up a Goal</div>
-          <input 
-            type="date" 
-            className='date-picker'
-            onChange={(e) => handleInputChange(e, "endDate")} 
-            value={endDate}
-          />
-        </div> */}
         <button 
           className="btn-dark"
           onClick={handleAddNewHabit}

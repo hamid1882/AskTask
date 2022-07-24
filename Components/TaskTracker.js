@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function TaskTracker({data, currentHabitId, scrollRef, selectedId, selectedHabitId, handleScroll}) {
+export default function TaskTracker({data, currentHabitId, scrollRef, selectedId, selectedHabitId, handleScroll, isCompleted}) {
   return (
     <div>
     <div className="habit-progress">
@@ -13,12 +13,32 @@ export default function TaskTracker({data, currentHabitId, scrollRef, selectedId
             data.days && data.days.map(val => (
                 <span className="progress-icon" key={val.value}>
                   {val.value == 1 ? "" : 
-                  <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}
+                  <span 
+                    className={val.checked 
+                      ? val.isCompleted 
+                        ? isCompleted 
+                          ? "habit-done-completed" 
+                      :  "habit-done" 
+                        : isCompleted 
+                          ? "habit-missed-completed" 
+                            : "habit-missed" 
+                              : "habit-upcoming"}>---</span>}
                   <span 
                   onClick={() => val.isChecked === true && handleCheckDay(data.id, val.value)}
-                  className={[selectedHabitId === val.value && data.id === selectedId ? "day-value, currentBorder" : "day-value", val.checked ? val.isCompleted ? "habit-done, habit-count-bg-done" : "habit-missed, habit-count-bg-missed" : "habit-upcoming"].join(" ")}>{val.value}</span>
+                  className={[selectedHabitId === val.value 
+                    && data.id === selectedId 
+                    ? "day-value, currentBorder" : "day-value", val.checked 
+                      ? val.isCompleted 
+                        ? isCompleted 
+                          ? "habit-done, habit-count-bg-done-completed" 
+                    : "habit-done, habit-count-bg-done" 
+                      : isCompleted ? "habit-missed, habit-count-bg-missed-completed"  
+                        : "habit-missed, habit-count-bg-missed" 
+                          : "habit-upcoming"].join(" ")}>
+                            {val.value}
+                </span>
                   {val.value == data.days.length ? "" : 
-                  <span className={val.checked ? val.isCompleted ? "habit-done" : "habit-missed" : "habit-upcoming"}>---</span>}
+                  <span className={val.checked ? val.isCompleted ?isCompleted ? "habit-done-completed" :  "habit-done": isCompleted ? "habit-missed-completed" : "habit-missed" : "habit-upcoming"}>---</span>}
                 </span>
             ))
           }
@@ -240,13 +260,28 @@ export default function TaskTracker({data, currentHabitId, scrollRef, selectedId
           background-color: red;
         }
 
+        .habit-count-bg-missed-completed {
+          background-color: rgba(255,0,0,0.2);
+          color: rgba(255,255,255,0.5);
+        }
+
         .habit-count-bg-done {
           background-color: darkgreen;
+        }
+
+        .habit-count-bg-done-completed {
+          background-color: rgba(0,255,0,0.2);
+          color: rgba(255,255,255,0.5);
         }
 
 
         .habit-done {
           color: darkgreen;
+          font-weight: bold;
+        }
+        
+        .habit-done-completed {
+          color: rgba(0,255,0,0.2);
           font-weight: bold;
         }
 
@@ -255,11 +290,17 @@ export default function TaskTracker({data, currentHabitId, scrollRef, selectedId
           font-weight: bold;
         }
 
+        .habit-missed-completed {
+          color: rgba(255,0,0,0.2);  
+          font-weight: bold;
+        }
+
         .habit-upcoming {
           color: gray;
           font-weight: bold;
           opacity: 0.7;
         }
+    
         `
       }</style>
       </div>

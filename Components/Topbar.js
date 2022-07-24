@@ -59,7 +59,7 @@ export default function Topbar({userName, isAvatar, handleLogout}) {
             alt="icon" 
             className="profile-pic" 
             style={{height: "3em", width: "3em", borderRadius: "50%"}}
-            onClick={toggleImage}
+            // onClick={toggleImage}
             />
         </div>
         <style jsx>{

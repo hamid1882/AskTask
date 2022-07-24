@@ -19,6 +19,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const [isUpdatingFailed, setIsUpdatingFailed] = useState(false);
   const [isSelectedHabitDay, setSelectedHabitDay] = useState(1);
   const [isAllChecked, setIsAllChecked] = useState(false);
+  const [isShowOptionId, setIsShowOptionId] = useState(1);
 
   let scrollRef = useRef(null);
 
@@ -31,25 +32,23 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   }
   
   const handleToggleOptions = (id) => {
-    setSelectedId(id);
+    setIsShowOptionId(id);
+    setCurrentHabitId(id);
     setIsOptions(!isOptions);
-    const selectedHabit = habitList.find(val => val.id === id);
-    const selectedHabitDate = selectedHabit && selectedHabitId && selectedHabit.days.find(val => val.checked === false).value;
-    setSelectedHabitId(selectedHabitDate);
   }
 
   const handleStart = (id) => {
     const selectedHabit = habitList.find(val => val.id === id);
-    const selectedHabitDate = selectedHabit && selectedHabitId && selectedHabit.days.find(val => val.checked === false).value;
+    const selectedHabitDate = selectedHabit.days.find(val => val.checked === false);
     setSelectedId(id);
+    setSelectedHabitDay(selectedHabitDate.value);
 
     const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
 
     if(checkIsAllChecked.length === 0 ) {
-      setIsAllChecked(true);
+      selectedHabit.taskCompleted = true;
     } else {
-      setIsAllChecked(false);
-      // setSelectedHabitId(selectedHabitDate);
+      selectedHabit.taskCompleted = false;
     }
   }
 
@@ -73,7 +72,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     const newData = {data : { [userId] : { habit : newHabitList}} }
     
     setIsDeleteLoading(true);
-    axios.put(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${dataId}`, newData).then(res => {
+    axios.put(process.env.NEXT_PUBLIC_URL + "/" + dataId, newData).then(res => {
       setUserData(res.data.data[userId]);
       setIsDeleteLoading(false);
       setIsOptions(false);
@@ -100,14 +99,13 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
     const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
 
-    if(checkIsAllChecked.length === 0 ) {
-      setIsAllChecked(true);
+    if(checkIsAllChecked && checkIsAllChecked.length <= 1 ) {
+      selectedHabit.taskCompleted = true;
     } else {
-      setIsAllChecked(false);
+      selectedHabit.taskCompleted = false;
     }
 
-
-    const selectedHabitDate = selectedHabit && selectedHabitId && selectedHabit.days.find(val => val.value === selectedHabitId);
+    const selectedHabitDate = selectedHabit && selectedHabitId && selectedHabit.days.find(val => val.value === isSelectedHabitDay);
     const userId = JSON.parse(localStorage.getItem('user')).id;
     const userDataId = JSON.parse(localStorage.getItem('user')).data_id;
 
@@ -122,14 +120,19 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       handleScroll(id, 60);
     } 
 
-    const newData = {data : { [userDataId] : { habit : habitList }} };
+    const sortedData = habitList.sort((a,b) => {
+      return a.taskCompleted - b.taskCompleted;
+    });
 
-    axios.put(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/${userId}`, newData).then(res => {
-      const parsedData = res.data.data[userDataId].habit
+    const newData = {data : { [userDataId] : { habit : sortedData }} };
+
+    axios.put(process.env.NEXT_PUBLIC_URL + "/" + userId, newData).then(res => {
+      const parsedData = res.data.data[userDataId].habit;
+
       setAllHabits(parsedData);
       setIsUpdating(false);
       setIsUpdatingFailed(false);
-      setSelectedHabitId(selectedHabitId + 1);
+        setSelectedHabitDay(isSelectedHabitDay + 1);
     }).catch(err => {
         console.log("error:", err);
       setIsUpdating(false);
@@ -161,7 +164,6 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       : null
       }
       <div className={allHabits &&  allHabits.length > 4 ? "task-bar-big"  :"task-bar"}>
-
       {
         isLoading ? 
         <div style={{display: "flex", justifyContent: "center", alignItems: "center", height: "100%"}}>
@@ -181,41 +183,43 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
             </div>  
           :
           allHabits && allHabits.map((data, idx) => (
-              <div key={data.id} className="task-item">
-                { isOptions && selectedId === data.id ?
+              <div key={data.id} className={data.taskCompleted ? "task-item-completed" :"task-item"}>
+                { isOptions && isShowOptionId === data.id ?
                   <OptionsBar 
                     id={data.id} 
                     handleDelete={handleDelete} 
                     isDeleteLoading={isDeleteLoading} 
                     handleEdit={handleEdit}
-                    currentHabitId={currentHabitId} 
+                    currentHabitId={isShowOptionId} 
                     scrollRef={scrollRef}
+                    isCompleted={data.taskCompleted}
                   />
                 : null
                 }
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
-                  <p style={{background: "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px 18px", }}>{idx + 1 }</p>
+                  <p style={{background: data.taskCompleted ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px 18px", }}>{idx + 1 }</p>
                   <div>
                     <h1 className="task-title">{data.name.toUpperCase()}</h1>
                     <TaskTracker 
                       data={data}
-                      selectedHabitId={selectedHabitId}
+                      selectedHabitId={isSelectedHabitDay}
                       selectedId={selectedId}
                       handleScroll={handleScroll}
                       currentHabitId={currentHabitId}
                       scrollRef={scrollRef}
+                      isCompleted={data.taskCompleted}
                     />
                   </div>
                 </div>
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
-                  <div className="day-check">
+                  <div className={data.taskCompleted ? "day-check-completed": "day-check"}>
                     {
-                      !isAllChecked ?
+                      !data.taskCompleted ?
                     <h3 className="check-text" 
                       onClick={() => handleStart(data.id)}>
                         {
                           selectedId === data.id 
-                          ?`Day-${selectedHabitId}` 
+                          ?`Day-${isSelectedHabitDay}` 
                           : "Start"
                         }
                     </h3>
@@ -223,7 +227,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                     <h3 className="check-text">Completed</h3>
                     }
                     { 
-                      data.id === selectedId
+                      data.id === selectedId && !data.taskCompleted
                       ?
                       <div className="checkbar">
                       {
@@ -265,10 +269,10 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                     }
                   </div>
                   <div 
-                    style={{background: isOptions && data.id === selectedId && "rgba(255,255,255, 0.5)"}} 
+                    style={{background: isOptions && data.id === isShowOptionId && "rgba(255,255,255, 0.5)"}} 
                     className="task-toggle-options" onClick={() => handleToggleOptions(data.id)}>
                     <img 
-                    src={isOptions && data.id === selectedId ? "/static/images/uparrow.svg" :"/static/images/downarrow.svg" }
+                    src={isOptions && data.id === isShowOptionId ? "/static/images/uparrow.svg" :"/static/images/downarrow.svg" }
                     onClick={() => handleToggleOptions(data.id)} alt="up" />
                   </div>
                 </div>
@@ -352,6 +356,18 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           height: 1.5em;
           padding: 1.5em 1em;
           background-color: rgba(255, 255, 255, 0.4);
+          border-radius: 30px;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          gap: 1.4em;
+        }
+
+        .day-check-completed {
+          width: 13.5em;
+          height: 1.5em;
+          padding: 1.5em 1em;
+          background-color: rgba(255, 255, 255, 0.2);
           border-radius: 30px;
           display: flex;
           justify-content: space-around;
@@ -524,6 +540,20 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           width: 96%;
           height: 6em;
           background-color: #C9B8D3;
+          border-radius: 30px;
+          padding: 1em 1em;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-direction: row;
+          cursor: pointer;
+          position: relative;
+        }
+
+        .task-item-completed {
+          width: 96%;
+          height: 6em;
+          background-color: rgba(100,100,100,0.3);
           border-radius: 30px;
           padding: 1em 1em;
           display: flex;

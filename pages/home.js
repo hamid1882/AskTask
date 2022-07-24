@@ -21,7 +21,7 @@ export default function home() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     if(user) {
-      axios.get(`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/data/`,).then(res => {
+      axios.get(`${process.env.NEXT_PUBLIC_URL + "/data"}`,).then(res => {
         const resultData = res.data.find(val => val.data[user.data_id]);
         const parsedData = resultData.data[user.data_id];
         setUserData(parsedData);
