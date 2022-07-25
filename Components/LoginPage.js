@@ -1,8 +1,8 @@
 import React,{useState, useEffect} from "react";
 import Link from 'next/link';
 import axios from "axios";
-import Signup from "../Components/Signup";
-import Login from "../Components/Login";
+import Signup from "./Signup";
+import Login from "./Login";
 
 export default function LoginPage() {
   const [username, setUserName] = useState("");

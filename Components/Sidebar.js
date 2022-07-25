@@ -1,16 +1,24 @@
-import React from 'react'
+import React,{useEffect} from 'react';
+import Link from "next/link";
+import {useRouter} from "next/router";
 
 export default function Sidebar() {
+  const router = useRouter();
+  
   return (
     <div className="side-bar">
-        <div className={["task-tab-container", "task-tab-active"].join(" ")}>
-          <img src="/static/images/habit.svg" alt="icon" className='task-icon'/>
-          <h4 className="task-title">Habit Tracker</h4>
-        </div>
-        <div className={["task-tab-container", "task-tab-bg"].join(" ")}>
-          <img src="/static/images/solve.svg" alt="icon" className='task-icon'/>
-          <h4 className="task-title">Happy Solver</h4>
-        </div>
+        <Link href={"./home"}>
+          <a className={["task-tab-container", router.asPath === "/home" ? "task-tab-active" : null].join(" ")}>
+            <img src="/static/images/habit.svg" alt="icon" className='task-icon'/>
+            <h4 className="task-title">Habit Tracker</h4>
+          </a>
+        </Link>
+        <Link href={"./happy-solver"}>
+          <a className={["task-tab-container", router.asPath === "/happy-solver" ? "task-tab-active" : null].join(" ")}>
+            <img src="/static/images/solve.svg" alt="icon" className='task-icon'/>
+            <h4 className="task-title">Happy Solver</h4>
+          </a>
+        </Link>
         <div className={["task-tab-container", "task-tab-bg"].join(" ")}>
           <img src="/static/images/time.svg" alt="icon" className='task-icon'/>
           <h4 className="task-title">Schedule</h4>
@@ -51,6 +59,8 @@ export default function Sidebar() {
           align-items: center;
           border: 1px solid #8C729B;
           cursor: pointer;
+          text-decoration: none;
+          color: rgba(0,0,0,0.7);
         }
 
         .task-tab-bg {
