@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import Topbar from '../../Components/Topbar';
 import Sidebar from '../../Components/Sidebar';
+import HappyContainer from '../../Components/happySolverCompo/HappyContainer';
 
 export default function Happyhome() {
   const [isAvatar, setIsAvatar] = useState("/static/images/logo.png");
@@ -32,7 +33,10 @@ export default function Happyhome() {
         handleLogout={handleLogout}
       />
       <div className="main-container">
-      <Sidebar />
+        <Sidebar />
+        <div className="happy-container">
+          <HappyContainer />
+        </div>
       </div>
       <style jsx>{
         `
@@ -42,11 +46,16 @@ export default function Happyhome() {
           overflow: hidden;
           background: radial-gradient(#694D78,#52435B);
           margin: 0;
+          position: relative;
         }
 
         .main-container {
           display: flex;
-        }    
+        }  
+        
+        .happy-container {
+          width: 100%;
+        }
         `
       }</style>
     </div>
