@@ -8,8 +8,8 @@ export default function Sidebar() {
           <h4 className="task-title">Habit Tracker</h4>
         </div>
         <div className={["task-tab-container", "task-tab-bg"].join(" ")}>
-          <img src="/static/images/task.svg" alt="icon" className='task-icon'/>
-          <h4 className="task-title">Task Manager</h4>
+          <img src="/static/images/solve.svg" alt="icon" className='task-icon'/>
+          <h4 className="task-title">Happy Solver</h4>
         </div>
         <div className={["task-tab-container", "task-tab-bg"].join(" ")}>
           <img src="/static/images/time.svg" alt="icon" className='task-icon'/>
