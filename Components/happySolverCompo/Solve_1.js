@@ -1,15 +1,15 @@
 import React from 'react'
 import Input from '../Input'
 
-export default function Question_1({page, handleNextPage}) {
+export default function Solve_1({page, handleNextPage}) {
   return (
-    <div className={page === 2 ? 'happy-container-inner-1-active' : 'happy-container-inner-1'}>
+    <div className={page === 5 ? 'happy-container-inner-1-active' : 'happy-container-inner-1'}>
         <h2>Happy Solver</h2>
         <img style={{width: "7em", height: "7em"}} src="/static/animation/happy.svg" alt="dfd" />
-        <h4>Can you define your problem?</h4>
+        <h4>Whats your solution?</h4>
         <Input value="Hello" title="Problem" theme="dark"/>
         <div className="login-bar">
-            <button className="button" style={{textAlign: "center"}} onClick={() => handleNextPage("question-2", 3)}>Next</button>
+            <button className="button" style={{textAlign: "center"}} onClick={() => handleNextPage("solution-1", 6)}>Next</button>
         </div>
         <style jsx>{`
         .happy-container {

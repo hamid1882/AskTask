@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function TaskTracker({data, currentHabitId, scrollRef, selectedId, selectedHabitId, handleScroll, isCompleted}) {
   return (
-    <div>
+    <div style={{marginLeft: "-7.5em"}}>
     <div className="habit-progress">
       <div 
         style={{zIndex: "2"}}

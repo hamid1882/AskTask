@@ -447,6 +447,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
         }
 
         .task-title {
+          width: 32em;
           font-family: sans-serif;
           font-size: 20px;
           color: rgba(0,0,0,0.5);

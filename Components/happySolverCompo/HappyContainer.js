@@ -1,14 +1,29 @@
 import React, {useState} from 'react'
 import Input from '../Input';
 import Question_1 from './Question-1';
+import Question_3 from './Question_3';
+import Solve_1 from './Solve_1';
+import Solve_2 from './Solve_2';
+import Solve_3 from './Solve_3';
 
 export default function HappyContainer() {
   const [page, setPage] = useState(0);
+  const [question1, setQuestion1] = useState("");
+  const [question2, setQuestion2] = useState("");
+  const [question3, setQuestion3] = useState("");
+  const [solution1, setSolution1] = useState("");
+  const [solution2, setSolution2] = useState("");
+  const [solution3, setSolution3] = useState("");
+
+
+
   const handleNextPage = (data,id) => {
+    switch(data) {
+      case "question-1":
+        setQuestion1("Question-1")
+    }
     setPage(id);
   }
-
-  console.log(page)
 
   return (
     <div className="happy-container">
@@ -40,6 +55,36 @@ export default function HappyContainer() {
           page={page} 
           handleNextPage={handleNextPage}
         />
+        <Question_3
+          page={page} 
+          handleNextPage={handleNextPage}
+        />
+
+        <div className={page === 4 ? 'happy-container-inner-1-active' : 'happy-container-inner-1'}>
+          <h2>Happy Solver</h2>
+          <img style={{width: "7em", height: "7em"}} src="/static/animation/happy.svg" alt="dfd" />
+          <h1>lets Solve it!</h1>
+          <div className="login-bar">
+              <button className="button" style={{textAlign: "center"}} onClick={() => handleNextPage("solve", 5)}>Lets Solve</button>
+          </div>
+        </div>
+
+        <Solve_1 
+          page={page}
+          handleNextPage={handleNextPage}
+        />
+
+        <Solve_2 
+          page={page}
+          handleNextPage={handleNextPage}
+        />
+
+      <Solve_3
+          page={page}
+          handleNextPage={handleNextPage}
+        />
+
+
       <style>{
         `.happy-container {
           width: 100%;
