@@ -85,7 +85,6 @@ export default function LoginPage() {
 
   const handleCreateData = () => {
     const id = username+123;
-    let idx = 0;
     const data = {
         [id] : {
           habit: []
