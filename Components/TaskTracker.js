@@ -53,7 +53,7 @@ export default function TaskTracker({data, currentHabitId, scrollRef, selectedId
                   alt="right" 
                   style={{height: "1.5em", width: "1.5em"}}
                   />
-                  <h3>{data.days.filter(val => val.checked === true).length}/{data.totalDays}</h3>
+                  <h3>{data.days.filter(val => val.checked === true).length} out of {data.totalDays}</h3>
                 {
                   <img  
                     className="left-scroll"
@@ -66,7 +66,7 @@ export default function TaskTracker({data, currentHabitId, scrollRef, selectedId
             </div>  
             : <div 
               className="pagination-pre">
-                <h3>{data.days.filter(val => val.checked === true).length}/{data.totalDays}</h3>
+                <h3>{data.days.filter(val => val.checked === true).length} out of {data.totalDays}</h3>
               </div>
             }
       </div>
