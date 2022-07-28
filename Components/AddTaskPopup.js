@@ -21,13 +21,30 @@ export default function AddTaskPopup({
   }
 
   const handleEditHabit = () => {
-    console.log("Updating", editHabit.id);
-  }
+    const selectedHabit = allHabits.find(val => val.id === editHabit.id);
+    selectedHabit.name = habitName;
+    selectedHabit.motive = habitMotive;
 
-  const handleAddNewHabit = () => {
     const userId = JSON.parse(localStorage.getItem('user')).data_id;
     const id = JSON.parse(localStorage.getItem('user')).id;
 
+    const newData = {data : { [userId] : { habit : allHabits}} };
+
+    axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + id, newData).then(res => {
+      // setAllHabits(res.data.data[userId].habit);
+      alert("Updated successfully");
+      setIsPopup(false);
+    }).catch(err => {
+      console.log(err.message)
+      alert("Something went wrong");
+    })
+
+  }
+  
+  const handleAddNewHabit = () => {
+    const userId = JSON.parse(localStorage.getItem('user')).data_id;
+    const id = JSON.parse(localStorage.getItem('user')).id;
+    
     const habitId = allHabits.length > 0 && allHabits[0].id ? allHabits[0].id : 0;
 
     let dayArr = [];
@@ -126,8 +143,7 @@ export default function AddTaskPopup({
         <div className="date-input-section">
           <div className="small-title">Select Goal</div>
           <input 
-            type="number" 
-            disabled={isEdit}
+            type="number"
             className='date-picker'
             onChange={(e) => handleInputChange(e, "days")} 
             value={days}

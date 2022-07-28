@@ -1,7 +1,19 @@
+import React,{useEffect} from "react";
 import Head from 'next/head';
 import LoginPage from "../Components/LoginPage";
 
 export default function Home() {
+
+  useEffect(() => {
+    if(typeof document !== "undefined") {
+      let isLogin = localStorage.getItem('isLoggedIn');
+      if(isLogin === true) {
+        window.location.href = "./home"
+      }
+    }
+  }, []);
+
+
   return (
     <div className='main'>
       <Head>
