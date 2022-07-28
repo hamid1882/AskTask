@@ -29,25 +29,22 @@ export default function LoginPage() {
 
   
   const handleInputText = (event, name, type) => {
-    if(name === "username") {
-      setUserName(event.target.value);
+    if(name === "username" || name === "password") {
+      if(name === "username") {
+        setUserName(event.target.value);
+      } else {
+        setPassword(event.target.value);
+      }
+
       const foundUser = users && users.find(val => val.username === event.target.value);
-      if(foundUser) {
+      const foundUserPsk = users && users.find(val => val.password === event.target.value);
+
+      if(foundUser && foundUserPsk) {
         setIsUser(foundUser);
       } else {
         setIsUser({})
       }
     } 
-    
-    if(name === "password") {
-      setPassword(event.target.value);
-      const foundUser = users && users.find(val => val.password === event.target.value);
-      if(foundUser) {
-        setIsUser(foundUser);
-      } else {
-        setIsUser({});
-      } 
-    }
 
     if(name === "fullname") {
       setFullName(event.target.value);
@@ -71,7 +68,8 @@ export default function LoginPage() {
     if(isUser.username === username && isUser.password === password) {
       setIsLogin(true);
       setIsError(false);
-      setRoute("./home")
+      document.location.href = "/home";
+      setRoute("./home");
       localStorage.setItem("user", JSON.stringify(isUser));
       localStorage.setItem("isLoggedIn", true);
     } else {
@@ -153,7 +151,7 @@ export default function LoginPage() {
       setRoute("./")
     }
 
-  }, [isUser])
+  }, [])
 
   return (
     <div className="login-page">
