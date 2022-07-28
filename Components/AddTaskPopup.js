@@ -3,11 +3,12 @@ import React, {useState, useEffect} from 'react';
 import Input from "./Input.js";
 
 export default function AddTaskPopup({
-  setIsPopup, allHabits, setAllHabits, dataId, editHabit, setEditHabit, isEdit, setIsEdit}) {
+  setIsPopup, allHabits, setAllHabits, dataId, editHabit, setEditHabit, isEdit, setIsEdit, setSelectedHabitDay}) {
   const [habitName, setHabitName] = useState("");
   const [habitMotive, setHabitMotive] = useState("");
   const [days, setDays] = useState(21);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isRepeating, setIsRepeating] = useState(false);
 
   const handleInputChange = (e, name) => {
     if(name === "name" && e.target.value.length <= 35) { 
@@ -21,28 +22,73 @@ export default function AddTaskPopup({
     }
   }
 
-  const handleEditHabit = () => {
-    setIsUpdating(true);
-    const selectedHabit = allHabits.find(val => val.id === editHabit.id);
-    selectedHabit.name = habitName;
-    selectedHabit.motive = habitMotive;
+  const handleEditHabit = (name) => {
 
-    const userId = JSON.parse(localStorage.getItem('user')).data_id;
-    const id = JSON.parse(localStorage.getItem('user')).id;
+    if(name === "repeat") {
+      setIsRepeating(true);
+      const selectedHabit = allHabits.find(val => val.id === editHabit.id);
 
-    const newData = {data : { [userId] : { habit : allHabits}} };
+      let dayArr = [];
 
-    axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + id, newData).then(res => {
-      // setAllHabits(res.data.data[userId].habit);
-      setIsUpdating(false)
-      alert("Updated successfully");
-      setIsPopup(false);
-    }).catch(err => {
-      console.log(err.message)
-      setIsUpdating(false)
-      alert("Something went wrong");
-    })
+      let scroll = [];
 
+      for(let i=1; i<=days; i++) {
+        dayArr.push({
+          value: i,
+          isCompleted: false,
+          isUpcoming: true,
+          checked: false,
+          scroll:  i >= 6 ? 60 * 1 : 0,
+        });
+      }
+
+      selectedHabit.name = habitName;
+      selectedHabit.motive = habitMotive;
+      selectedHabit.days= dayArr;
+      selectedHabit.scroll = scroll;
+      selectedHabit.taskCompleted = false;
+      selectedHabit.totalDays = days;
+  
+      const userId = JSON.parse(localStorage.getItem('user')).data_id;
+      const id = JSON.parse(localStorage.getItem('user')).id;
+
+  
+      const newData = {data : { [userId] : { habit : allHabits}} };
+  
+      axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + id, newData).then(res => {
+        console.log(allHabits)
+        setAllHabits(res.data.data[userId].habit);
+        setIsRepeating(false)
+        alert("Updated successfully");
+        setIsPopup(false);
+        setSelectedHabitDay(1);
+      }).catch(err => {
+        console.log(err.message)
+        setIsRepeating(false)
+        alert("Something went wrong");
+      })
+    } else {
+      setIsUpdating(true);
+      const selectedHabit = allHabits.find(val => val.id === editHabit.id);
+      selectedHabit.name = habitName;
+      selectedHabit.motive = habitMotive;
+  
+      const userId = JSON.parse(localStorage.getItem('user')).data_id;
+      const id = JSON.parse(localStorage.getItem('user')).id;
+  
+      const newData = {data : { [userId] : { habit : allHabits}} };
+  
+      axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + id, newData).then(res => {
+        // setAllHabits(res.data.data[userId].habit);
+        setIsUpdating(false)
+        alert("Updated successfully");
+        setIsPopup(false);
+      }).catch(err => {
+        console.log(err.message)
+        setIsUpdating(false)
+        alert("Something went wrong");
+      })
+    }
   }
   
   const handleAddNewHabit = () => {
@@ -171,6 +217,16 @@ export default function AddTaskPopup({
                 >Create Now
               </button>
             :
+            <div className="date-input-section">
+              <button
+                   className={!isRepeating ? "btn-dark" : "btn-dark-img"}
+                   onClick={() => handleEditHabit("repeat")}
+                   >
+                    { !isRepeating
+                    ? "Start as new" 
+                    : <img style={{width: '4em', height: '2em',}} src="/static/loader/button-loader.svg"/>
+                    }
+              </button>
               <button
                  className={!isUpdating ? "btn-dark" : "btn-dark-img"}
                  onClick={handleEditHabit}
@@ -180,6 +236,7 @@ export default function AddTaskPopup({
                   : <img style={{width: '4em', height: '2em',}} src="/static/loader/button-loader.svg"/>
                   }
              </button>
+             </div>
             }
         </div>
       </div>
@@ -283,7 +340,7 @@ export default function AddTaskPopup({
             border: 1px solid #564560;
             margin-top: 3em;
             position: relative;
-            left: 10em;
+            left: 7em;
             cursor: pointer;
           }
           

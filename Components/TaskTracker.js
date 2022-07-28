@@ -1,6 +1,7 @@
 import React from 'react'
 
-export default function TaskTracker({data, currentHabitId, scrollRef, selectedId, selectedHabitId, handleScroll, isCompleted}) {
+export default function TaskTracker({
+  data, currentHabitId, scrollRef, selectedId, selectedHabitId, handleScroll, isCompleted}) {
   return (
     <div>
     <div className="habit-progress">
