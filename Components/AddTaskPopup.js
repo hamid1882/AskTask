@@ -7,6 +7,7 @@ export default function AddTaskPopup({
   const [habitName, setHabitName] = useState("");
   const [habitMotive, setHabitMotive] = useState("");
   const [days, setDays] = useState(21);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleInputChange = (e, name) => {
     if(name === "name" && e.target.value.length <= 35) { 
@@ -21,6 +22,7 @@ export default function AddTaskPopup({
   }
 
   const handleEditHabit = () => {
+    setIsUpdating(true);
     const selectedHabit = allHabits.find(val => val.id === editHabit.id);
     selectedHabit.name = habitName;
     selectedHabit.motive = habitMotive;
@@ -32,10 +34,12 @@ export default function AddTaskPopup({
 
     axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + id, newData).then(res => {
       // setAllHabits(res.data.data[userId].habit);
+      setIsUpdating(false)
       alert("Updated successfully");
       setIsPopup(false);
     }).catch(err => {
       console.log(err.message)
+      setIsUpdating(false)
       alert("Something went wrong");
     })
 
@@ -150,22 +154,34 @@ export default function AddTaskPopup({
             />
         </div>
         <div style={{display:'flex', alignItems: 'center', gap: "0.7em"}}>
-        {isEdit ?
+        {/* {isEdit ?
             <button 
               disabled={isEdit}
               className={isEdit ? "btn-dark-disabled" :"btn-dark"}
               onClick={handleAddNewHabit}
               >Repeat
             </button>
-            : null}
-            <button 
-              disabled={isEdit}
-              className={isEdit ? "btn-dark-disabled" :"btn-dark"}
-              onClick={handleAddNewHabit}
-              >Create Now
-            </button>
+            : null} */}
+            {
+              !isEdit 
+              ? 
+              <button 
+                className={"btn-dark"}
+                onClick={handleAddNewHabit}
+                >Create Now
+              </button>
+            :
+              <button
+                 className={!isUpdating ? "btn-dark" : "btn-dark-img"}
+                 onClick={handleEditHabit}
+                 >
+                  { !isUpdating 
+                  ? "Update" 
+                  : <img style={{width: '4em', height: '2em',}} src="/static/loader/button-loader.svg"/>
+                  }
+             </button>
+            }
         </div>
-        <button onClick={handleEditHabit}>Update</button>
       </div>
       <style jsx>
         { 
@@ -269,6 +285,15 @@ export default function AddTaskPopup({
             position: relative;
             left: 10em;
             cursor: pointer;
+          }
+          
+          .btn-dark-img {
+            background-color: transparent;
+            margin-top: 3em;
+            position: relative;
+            left: 10em;
+            cursor: pointer;
+            border: none;
           }
 
           .btn-dark-disabled {
