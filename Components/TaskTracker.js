@@ -200,9 +200,9 @@ export default function TaskTracker({data, currentHabitId, scrollRef, selectedId
         }
 
         .pagination {
-          position: relative;
-          top: -1.15em;
-          right: -6.6em;
+          // position: relative;
+          // top: -1.15em;
+          // right: -6.6em;
           width: 100%;
           display: flex;
           justify-content: flex-end;
@@ -223,9 +223,9 @@ export default function TaskTracker({data, currentHabitId, scrollRef, selectedId
         }
         
         .pagination-pre {
-          position: relative;
-          top: -1.15em;
-          right: -2.3em;
+          // position: relative;
+          // top: -1.15em;
+          // right: -2.3em;
           width: 100%;
           display: flex;
           justify-content: flex-end;

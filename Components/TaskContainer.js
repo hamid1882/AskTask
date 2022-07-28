@@ -58,8 +58,8 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   }
 
   const handleEdit = (id) => {
-    // const newHabitList =  habitList.find(val => val.id === id);
-    // setEditHabit(newHabitList);
+    const newHabitList =  habitList.find(val => val.id === id);
+    setEditHabit(newHabitList);
     setIsPopup(true);
     setIsOptions(false);
     setIsEdit(true);
@@ -200,9 +200,9 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                 }
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
                   <p style={{background: data.taskCompleted ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px 18px", }}>{idx + 1 }</p>
-                  <div>
+                  <div style={{display: "grid", placeItems: "self-start"}}>
                     <h1 className="task-title">{data.name.toUpperCase()}</h1>
-                    <TaskTracker 
+                    <TaskTracker  
                       data={data}
                       selectedHabitId={isSelectedHabitDay}
                       selectedId={selectedId}
@@ -447,11 +447,13 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
         }
 
         .task-title {
+          width: 26.2em;
           font-family: sans-serif;
           font-size: 20px;
           color: rgba(0,0,0,0.5);
           letter-spacing: 0.1em;
           margin-top: 1em;
+          overflow: hidden;
         }
 
         .habit-progress {

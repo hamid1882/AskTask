@@ -9,13 +9,19 @@ export default function AddTaskPopup({
   const [days, setDays] = useState(21);
 
   const handleInputChange = (e, name) => {
-    if(name === "name") { 
+    if(name === "name" && e.target.value.length <= 35) { 
       setHabitName(e.target.value);
     } else if(name === "motive") {
       setHabitMotive(e.target.value);
     } else if(name === "days") {
       setDays(e.target.value);
-    } 
+    } else {
+      alert("Minimum value must be between 1 - 35 characters")
+    }
+  }
+
+  const handleEditHabit = () => {
+    console.log("Updating", editHabit.id);
   }
 
   const handleAddNewHabit = () => {
@@ -80,7 +86,7 @@ export default function AddTaskPopup({
       if(isEdit === true) {
         setHabitName(editHabit.name);
         setHabitMotive(editHabit.motive);
-        setDays(editHabit.days);
+        setDays(editHabit.totalDays);
       }
     }, []);
 
@@ -94,7 +100,7 @@ export default function AddTaskPopup({
           className="cancel-icon" 
           onClick={() => setIsPopup(false)}
         />
-        <h2 className="title">Create A New Habit</h2>
+        <h2 className="title">{isEdit ? "Habit Details" : "Create A New Habit"}</h2>
         <div className="input-bar">
           <Input 
             title = {"Habit Name"}
@@ -121,19 +127,32 @@ export default function AddTaskPopup({
           <div className="small-title">Select Goal</div>
           <input 
             type="number" 
+            disabled={isEdit}
             className='date-picker'
             onChange={(e) => handleInputChange(e, "days")} 
             value={days}
             />
         </div>
-        <button 
-          disabled={isEdit}
-          className="btn-dark"
-          onClick={handleAddNewHabit}
-          >Create Now</button>
+        <div style={{display:'flex', alignItems: 'center', gap: "0.7em"}}>
+        {isEdit ?
+            <button 
+              disabled={isEdit}
+              className={isEdit ? "btn-dark-disabled" :"btn-dark"}
+              onClick={handleAddNewHabit}
+              >Repeat
+            </button>
+            : null}
+            <button 
+              disabled={isEdit}
+              className={isEdit ? "btn-dark-disabled" :"btn-dark"}
+              onClick={handleAddNewHabit}
+              >Create Now
+            </button>
+        </div>
+        <button onClick={handleEditHabit}>Update</button>
       </div>
       <style jsx>
-        {
+        { 
           `
 
           input[type="time"]::-webkit-calendar-picker-indicator {
@@ -234,6 +253,17 @@ export default function AddTaskPopup({
             position: relative;
             left: 10em;
             cursor: pointer;
+          }
+
+          .btn-dark-disabled {
+            color: rgba(0, 0, 0, 0.5);
+            background-color: coffe;
+            padding: 0.8em;
+            border-radius: 3em;
+            margin-top: 3em;
+            position: relative;
+            left: 6em;
+            cursor: not-allowed;
           }
           `
         }
