@@ -38,8 +38,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   }
 
   const handleStart = (id) => {
-    const selectedHabit = allHabits.find(val => val.id === id);
-    console.log(selectedHabit);
+    const selectedHabit = selectedHabit.find(val => val.id === id);
     const selectedHabitDate = id && selectedHabit.days.find(val => val.checked === false);
     setSelectedId(id);
     selectedHabitDate && setSelectedHabitDay(selectedHabitDate.value);
@@ -59,7 +58,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   }
 
   const handleEdit = (id) => {
-    const newHabitList =  habitList.find(val => val.id === id);
+    const newHabitList =  allHabits.find(val => val.id === id);
     setEditHabit(newHabitList);
     setIsPopup(true);
     setIsOptions(false);
