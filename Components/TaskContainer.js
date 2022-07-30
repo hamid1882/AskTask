@@ -79,7 +79,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     }).catch(err => {
       alert("Not Able to delete, check console for more info");
       console.log("error:", err);
-      setIsDeleteLoading(false)
+      setIsDeleteLoading(false);
     })
   }
   
