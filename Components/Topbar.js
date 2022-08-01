@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React, {useRef} from 'react'
+import {AdvancedImage} from '@cloudinary/react';
+import {Cloudinary, Transformation} from "@cloudinary/url-gen";
 
 export default function Topbar({userName, isAvatar, handleLogout}) {
   const inputFile = useRef(null);
@@ -29,6 +31,26 @@ export default function Topbar({userName, isAvatar, handleLogout}) {
 		// 		console.error('Error:', error);
 		// 	});
 	};
+
+  // const cld = new Cloudinary({
+  //   cloud: {
+  //     apiKey: process.env.CLOUDINARY_API_KEY,
+  //     apiSecret: process.env.CLOUDINARY_API_SECRET,
+  //     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+  //     secure: true
+  //   },
+  //   url: {
+  //     secureDistribution: 'https://res.cloudinary.com/cloudihafeez/image/upload/v1644508307/avatars/yifdbme0vjans8xxxu65.jpg', 
+  //     secure: true 
+  //   },
+  // });
+
+
+
+  // const myImage = cld.image('sample');
+
+
+  // console.log(cld.image("Hamid"), process.env.CLOUDINARY_API_KEY)
 
 
   return (
