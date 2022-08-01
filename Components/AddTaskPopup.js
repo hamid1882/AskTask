@@ -3,7 +3,7 @@ import React, {useState, useEffect} from 'react';
 import Input from "./Input.js";
 
 export default function AddTaskPopup({
-  setIsPopup, allHabits, setAllHabits, dataId, editHabit, setEditHabit, isEdit, setIsEdit, setSelectedHabitDay}) {
+  setIsPopup, allHabits, setAllHabits, dataId, editHabit, setEditHabit, isEdit, setIsEdit, setSelectedHabitDay, setIsHovered}) {
   const [habitName, setHabitName] = useState("");
   const [habitMotive, setHabitMotive] = useState("");
   const [days, setDays] = useState(21);
@@ -94,6 +94,7 @@ export default function AddTaskPopup({
   const handleAddNewHabit = () => {
     const userId = JSON.parse(localStorage.getItem('user')).data_id;
     const id = JSON.parse(localStorage.getItem('user')).id;
+    setIsHovered(false);
     
     const habitId = allHabits.length > 0 && allHabits[0].id ? allHabits[0].id : 0;
 

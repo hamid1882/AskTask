@@ -20,6 +20,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const [isSelectedHabitDay, setSelectedHabitDay] = useState(1);
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [isShowOptionId, setIsShowOptionId] = useState(1);
+  const [isHovered, setIsHovered] = useState(false);
 
   let scrollRef = useRef(null);
 
@@ -45,8 +46,6 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
     const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
 
-    console.log(checkIsAllChecked)
-
     if(checkIsAllChecked.length === 0 ) {
       selectedHabit.taskCompleted = true;
     } else {
@@ -57,6 +56,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const handlePopupOpen = () => {
     setIsPopup(true);
     setIsEdit(false);
+    setIsHovered(false);
   }
 
   const handleEdit = (id) => {
@@ -150,6 +150,16 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       setSelectedId(id);
     }
 
+    const handleMotiveHover = (isOver, id) => {
+      if(isOver) {
+        setIsHovered(true);
+        setIsShowOptionId(id);
+      } else {
+        setIsHovered(false);
+        setIsShowOptionId(id);
+      }
+    }
+
   useEffect(() => {
     setIsLoading(habitList ? false : true);
     // getAllHabits();
@@ -203,7 +213,23 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                 <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
                   <p style={{background: data.taskCompleted ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px 18px", }}>{idx + 1 }</p>
                   <div style={{display: "grid", placeItems: "self-start"}}>
-                    <h1 className="task-title">{data.name.toUpperCase()}</h1>
+                    {
+                      isHovered && isShowOptionId === data.id ?
+                      <h1
+                        className="task-title-hovered" 
+                        onMouseOver={() => handleMotiveHover(true, data.id)} 
+                        onMouseOut={() => handleMotiveHover(false, data.id)}
+                        >
+                          ❝{data.motive.toUpperCase()}❞
+                      </h1>
+                    : 
+                      <h1 
+                        className="task-title" 
+                        onMouseOver={() => handleMotiveHover(true, data.id)} 
+                        onMouseOut={() => handleMotiveHover(false, data.id)}
+                        >{data.name.toUpperCase()}
+                     </h1>
+                    }
                     <TaskTracker  
                       data={data}
                       selectedHabitId={isSelectedHabitDay}
@@ -295,6 +321,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
             setEditHabit={setEditHabit}
             isEdit={isEdit}
             setSelectedHabitDay={setSelectedHabitDay}
+            setIsHovered={setIsHovered}
             />
             : null
       }
@@ -451,11 +478,24 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
         .task-title {
           width: 26.2em;
+          height: 1.2em;
           font-family: sans-serif;
           font-size: 20px;
           color: rgba(0,0,0,0.5);
           letter-spacing: 0.1em;
           margin-top: 1em;
+          overflow: hidden;
+        }
+
+        .task-title-hovered {
+          width: 26.2em;
+          height: 1.5em;
+          font-family: roboto;
+          font-weight: bold;
+          font-size: 16px;
+          color: rgba(0,0,0,0.7);
+          letter-spacing: 0.1em;
+          margin-top: 1.4em;
           overflow: hidden;
         }
 
