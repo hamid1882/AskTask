@@ -97,7 +97,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     
     setSelectedId(id);
     
-    const selectedHabit = allHabits.find(val => val.id === id); 
+    const selectedHabit = habitList.find(val => val.id === id); 
 
     const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
 
