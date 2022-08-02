@@ -1,56 +1,38 @@
 import axios from 'axios';
-import React, {useRef} from 'react'
+import React, {useState,useRef, useEffect} from 'react'
 import {AdvancedImage} from '@cloudinary/react';
 import {Cloudinary, Transformation} from "@cloudinary/url-gen";
 
 export default function Topbar({userName, isAvatar, handleLogout}) {
+const [isImage, setIsImage] = useState("");
+
+
+
+
   const inputFile = useRef(null);
 
   const toggleImage = () => {
     inputFile.current.click();
   }
 
-  const handleChangeImage = (e) => {
+  const UploadImage = () => {
     const formData = new FormData();
-
-		formData.append('File', formData);
-
-    // const userId = JSON.parse(localStorage.getItem("user"))
-
-		// fetch(
-		// 	`https://62d361ea81cb1ecafa6cb7b8.mockapi.io/api/v1/users/${userId.id}`,
-		// 	{ 
-		// 		method: 'PUT',
-		// 		body: {avatar: formData},
-		// 	}
-		// )
-		// 	.then((response) => response.json()).then(result => {
-    //     console.log(result);
-    //   })
-		// 	.catch((error) => {
-		// 		console.error('Error:', error);
-		// 	});
-	};
-
-  // const cld = new Cloudinary({
-  //   cloud: {
-  //     apiKey: process.env.CLOUDINARY_API_KEY,
-  //     apiSecret: process.env.CLOUDINARY_API_SECRET,
-  //     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-  //     secure: true
-  //   },
-  //   url: {
-  //     secureDistribution: 'https://res.cloudinary.com/cloudihafeez/image/upload/v1644508307/avatars/yifdbme0vjans8xxxu65.jpg', 
-  //     secure: true 
-  //   },
-  // });
+    formData.append("Avatar", isImage);
+    formData.append("upload_preset", "k8izzzm7");
 
 
-
-  // const myImage = cld.image('sample');
-
-
-  // console.log(cld.image("Hamid"), process.env.CLOUDINARY_API_KEY)
+    axios.post(`https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`, formData).then(res => {
+      console.log(res)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+  
+  useEffect(() => {
+    if(isImage) {
+      UploadImage();
+    }
+  }, [isImage])
 
 
   return (
@@ -74,14 +56,14 @@ export default function Topbar({userName, isAvatar, handleLogout}) {
             style={{display: 'none'}}
             name="img"
             accept="image/*"
-            onChange={handleChangeImage}
+            onChange={(e) => setIsImage(e.target.files[0])}
           />
             <img 
             src={isAvatar} 
             alt="icon" 
             className="profile-pic" 
             style={{height: "3em", width: "3em", borderRadius: "50%"}}
-            // onClick={toggleImage}
+            onClick={toggleImage}
             />
         </div>
         <style jsx>{
