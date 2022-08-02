@@ -349,7 +349,7 @@ export default function AddTaskPopup({
             background-color: transparent;
             margin-top: 3em;
             position: relative;
-            left: 10em;
+            left: 7em;
             cursor: pointer;
             border: none;
           }

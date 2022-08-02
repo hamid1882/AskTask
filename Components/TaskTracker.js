@@ -1,10 +1,38 @@
-import React from 'react'
+import React,{useState} from 'react'
 
 export default function TaskTracker({
-  data, currentHabitId, scrollRef, selectedId, selectedHabitId, handleScroll, isCompleted}) {
+  data, currentHabitId, scrollRef, selectedId, selectedHabitId, handleScroll, isCompleted, handleCheckDay}) {
+
+  const [isPagination, setIsPagination] = useState(false);
+
+  const handlePaginationHover = (isHovered) => {
+    if(isHovered) {
+      setIsPagination(isHovered);
+    } else {
+      setIsPagination(isHovered);
+    }
+  }
+
   return (
     <div>
-    <div className="habit-progress">
+    <div 
+     className="habit-progress"
+     onMouseOver={() => data.id === selectedId ? handlePaginationHover(true) : {}}
+     >
+      {
+        isPagination && data.id === selectedId ? 
+        <div
+        onMouseOver={() => data.id === selectedId ? handlePaginationHover(true) : {}}
+        onMouseOut={() => data.id === selectedId ? handlePaginationHover(false) : {}}
+           className="Next" onClick={() => handleScroll(data.id, 60)}>
+          <img  
+            className="right-scroll"
+            src="/static/images/right-arrow.svg" 
+            alt="right" 
+            style={{height: "1.5em", width: "1.5em"}}
+            />
+        </div> : null
+      }
       <div 
         style={{zIndex: "2"}}
           className={data.days.length >= 6 
@@ -23,9 +51,9 @@ export default function TaskTracker({
                         : isCompleted 
                           ? "habit-missed-completed" 
                             : "habit-missed" 
-                              : "habit-upcoming"}>---</span>}
+                              : "habit-upcoming"}>-</span>}
                   <span 
-                  onClick={() => val.isChecked === true && handleCheckDay(data.id, val.value)}
+                  onClick={() => data.id === selectedId ? handleCheckDay(data.id, val.value) : {}}
                   className={[selectedHabitId === val.value 
                     && data.id === selectedId 
                     ? "day-value, currentBorder" : "day-value", val.checked 
@@ -39,12 +67,21 @@ export default function TaskTracker({
                             {val.value}
                 </span>
                   {val.value == data.days.length ? "" : 
-                  <span className={val.checked ? val.isCompleted ?isCompleted ? "habit-done-completed" :  "habit-done": isCompleted ? "habit-missed-completed" : "habit-missed" : "habit-upcoming"}>---</span>}
+                  <span 
+                  className={val.checked 
+                              ? val.isCompleted 
+                                ? isCompleted 
+                                 ? "habit-done-completed" 
+                              :  "habit-done"
+                                : isCompleted 
+                                  ? "habit-missed-completed" 
+                                : "habit-missed" 
+                                  : "habit-upcoming"}>-</span>}
                 </span>
             ))
           }
         </div>
-            {
+            {/* {
               data.days.length >= 10 ?
               <div className="pagination">
                 <img  
@@ -69,7 +106,7 @@ export default function TaskTracker({
               className="pagination-pre">
                 <h3>{data.days.filter(val => val.checked === true).length} out of {data.totalDays}</h3>
               </div>
-            }
+            } */}
       </div>
       <style jsx>{`
         .habit-progress {
@@ -79,6 +116,20 @@ export default function TaskTracker({
           gap: 1em;
           margin-top: -1em;
           color: rgba(0,0,0,0.5);
+          position: relative;
+        }
+
+        .Next {
+          position: absolute;
+          right: 0;
+          bottom: 0.4em;
+          height: 2.5em;
+          width: 2em;
+          background-color: rgba(225,225,225,1);  
+          z-index: 5;
+          border-top-left-radius: 1em;
+          border-bottom-left-radius: 1em;
+          box-shadow: 0px 1px 8px 1px gray;
         }
 
         .consistent {
@@ -201,9 +252,6 @@ export default function TaskTracker({
         }
 
         .pagination {
-          // position: relative;
-          // top: -1.15em;
-          // right: -6.6em;
           width: 100%;
           display: flex;
           justify-content: flex-end;
@@ -219,14 +267,11 @@ export default function TaskTracker({
           border: 2px solid gold;
           background: rgba(255,255,255,0.6);
           padding: 0.33em 0.55em;
-          border-radius: 50%;
+          border-radius: 0.3em;
           color: white;
         }
         
         .pagination-pre {
-          // position: relative;
-          // top: -1.15em;
-          // right: -2.3em;
           width: 100%;
           display: flex;
           justify-content: flex-end;
@@ -241,7 +286,7 @@ export default function TaskTracker({
         .right-scroll {
           padding: 0.2em;
           position: relative;
-          right: -2em;
+          bottom: -0.3em;
         }
         
         .left-scroll {
@@ -253,7 +298,7 @@ export default function TaskTracker({
         .day-value {
           background: rgba(255,255,255,0.6);
           padding: 0.33em 0.55em;
-          border-radius: 50%;
+          border-radius: 0.3em;
           color: white;
         }
 
@@ -301,7 +346,7 @@ export default function TaskTracker({
           font-weight: bold;
           opacity: 0.7;
         }
-    
+
         `
       }</style>
       </div>

@@ -146,8 +146,22 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     }
 
     const handleCheckDay = (id, value) => {
-      setSelectedHabitId(value);
-      setSelectedId(id);
+
+      const selectedHabit = habitList.find(val => val.id === id); 
+      
+      const selectedHabitDay = selectedHabit.days.find(val => {
+        if(val.value === value) {
+          return val
+        } 
+        
+        if (val.checked === false) {
+          console.log("hello")
+          return val
+        }
+
+      }); 
+
+      setSelectedHabitDay(selectedHabitDay.value);
     }
 
     const handleMotiveHover = (isOver, id) => {
@@ -227,7 +241,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                         className="task-title" 
                         onMouseOver={() => handleMotiveHover(true, data.id)} 
                         onMouseOut={() => handleMotiveHover(false, data.id)}
-                        >{data.name.toUpperCase()}
+                        >{data.name.toUpperCase()} ({data.totalDays} Days)
                      </h1>
                     }
                     <TaskTracker  
@@ -238,6 +252,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                       currentHabitId={currentHabitId}
                       scrollRef={scrollRef}
                       isCompleted={data.taskCompleted}
+                      handleCheckDay={handleCheckDay}
                     />
                   </div>
                 </div>
@@ -339,6 +354,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           position: relative;
           padding: 1em;
           margin: 0 1em;
+          scroll-behavior: smooth;
         }
 
         .task-container-inner {
@@ -483,20 +499,20 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
           font-size: 20px;
           color: rgba(0,0,0,0.5);
           letter-spacing: 0.1em;
-          margin-top: 1em;
           overflow: hidden;
         }
 
         .task-title-hovered {
-          width: 26.2em;
+          width: 40;
           height: 1.5em;
           font-family: roboto;
           font-weight: bold;
           font-size: 16px;
           color: rgba(0,0,0,0.7);
           letter-spacing: 0.1em;
-          margin-top: 1.4em;
           overflow: hidden;
+          transform: translate(20%, -20%);
+          transition: transform 0.8s;
         }
 
         .habit-progress {
