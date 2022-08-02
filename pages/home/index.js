@@ -54,6 +54,7 @@ export default function home() {
         userName={userName}
         isAvatar={isAvatar}
         handleLogout={handleLogout}
+        setIsAvatar={setIsAvatar}
       />
       <div className="main-container">
       <Sidebar />

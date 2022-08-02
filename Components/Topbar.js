@@ -1,13 +1,9 @@
 import axios from 'axios';
-import React, {useState,useRef, useEffect} from 'react'
-import {AdvancedImage} from '@cloudinary/react';
-import {Cloudinary, Transformation} from "@cloudinary/url-gen";
+import React, {useState,useRef, useEffect} from 'react';
 
-export default function Topbar({userName, isAvatar, handleLogout}) {
+export default function Topbar({userName, isAvatar, handleLogout, setIsAvatar}) {
 const [isImage, setIsImage] = useState("");
-
-
-
+const [isUpdating, setIsUpdating] = useState(false);
 
   const inputFile = useRef(null);
 
@@ -15,16 +11,31 @@ const [isImage, setIsImage] = useState("");
     inputFile.current.click();
   }
 
+  const UpdateProfilePicture = (url) => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    userData.avatar = url;
+
+    axios.put(`${process.env.NEXT_PUBLIC_URL}/users/${userData.id}/`, userData).then(res => {
+      console.log(res);
+    }).catch(err => console.log(err))
+
+    localStorage.setItem("user", JSON.stringify(userData));
+  }
+
   const UploadImage = () => {
+    setIsUpdating(true);
     const formData = new FormData();
-    formData.append("Avatar", isImage);
+    formData.append("file", isImage);
     formData.append("upload_preset", "k8izzzm7");
 
 
-    axios.post(`https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`, formData).then(res => {
-      console.log(res)
+    axios.post(`https://api.cloudinary.com/v1_1/cloudihafeez/image/upload`, formData).then(res => {
+      UpdateProfilePicture(res.data.url);
+      setIsAvatar(res.data.url);
+      setIsUpdating(false);
     }).catch(err => {
       console.log(err)
+      setIsUpdating(false);
     })
   }
   
@@ -47,7 +58,10 @@ const [isImage, setIsImage] = useState("");
         <div className="flex-1">
           <div className="top-text-bar">
             <h4 className="welcome-text">Welcome {userName.toUpperCase()}!</h4>
-            <button className="dashboard-btn">Dashboard</button>
+            <button 
+              className="dashboard-btn" 
+              onClick={() => document.location.href = "./"}
+              >Logout</button>
           </div>
           <input 
             type='file' 
@@ -58,13 +72,22 @@ const [isImage, setIsImage] = useState("");
             accept="image/*"
             onChange={(e) => setIsImage(e.target.files[0])}
           />
-            <img 
+           { 
+           !isUpdating ?
+           <img 
             src={isAvatar} 
             alt="icon" 
             className="profile-pic" 
-            style={{height: "3em", width: "3em", borderRadius: "50%"}}
+            title="Change Profile Pic"
+            style={{height: "3.5em", width: "3.5em", borderRadius: "50%"}}
             onClick={toggleImage}
             />
+            : 
+            <img
+               style={{height: "3em", width: "3em", borderRadius: "50%"}}
+               src="/static/loader/button-loader.svg" 
+            />
+            }
         </div>
         <style jsx>{
         `
@@ -91,6 +114,13 @@ const [isImage, setIsImage] = useState("");
 
         .profile-pic {
           cursor: pointer;
+          object-fit: cover;
+        }
+        
+        .profile-pic:hover {
+          opacity: 0.8;
+          box-shadow: 0px 1px 1px 1px rgba(0,0,0,0.7);
+          transition: all 0.3s;
         }
 
         .welcome-text {
