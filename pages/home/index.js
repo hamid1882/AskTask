@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Link from "next/link";
-import Topbar from '../../Components/Topbar';
+import Topbar from '../../Components/Topbar/Topbar';
 import Sidebar from '../../Components/Sidebar';
 import TaskContainer from '../../Components/TaskContainer';
 import axios from 'axios';

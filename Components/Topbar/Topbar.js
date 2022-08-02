@@ -1,4 +1,6 @@
 import axios from 'axios';
+import Image from 'next/image';
+import classes from"./Topbar.module.css";
 import React, {useState,useRef, useEffect} from 'react';
 
 export default function Topbar({userName, isAvatar, handleLogout, setIsAvatar}) {
@@ -49,10 +51,10 @@ const [isUpdating, setIsUpdating] = useState(false);
   return (
     <div className="top-bar">
         <div className="flex-1">
-          <img 
-            src="/static/images/logo.png" 
+          <img
+            src="/static/images/logo.png"
             alt="icon" 
-            style={{height: "3em", width: "3em", opacity: "0.7"}} />
+            className={classes.img} />
           <h2 className="title">#AskTask</h2>
         </div>
         <div className="flex-1">
