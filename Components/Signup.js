@@ -179,6 +179,15 @@ export default function Signup({
         font-size: 14px;
         letter-spacing: 0.1em;
       }
+
+      @media (max-width: 1000px) {
+        .login-container {
+          width: 100%;
+          height: 20em;
+          border-radius: 2em;
+          padding: 1.5em 1.5em;
+        }
+      }
       `}
       </style>    
       </div>

@@ -104,13 +104,13 @@ export default function Home() {
             position: relative;
             top: 2em;
             left: 2em;
-            width: 360px;
+            width: 300px;
             height: auto;
             background: radial-gradient(#694D78,#52435B);
             opacity: 0.9;
             border-radius: 34px;
             border: 1px solid #707070;
-            overflow: scroll;
+            overflow: hidden;
           }
         }
       `}</style>
