@@ -103,7 +103,7 @@ export default function Home() {
           .user-login-container {
             position: relative;
             top: 2em;
-            left: 5em;
+            left: 2em;
             width: 360px;
             height: auto;
             background: radial-gradient(#694D78,#52435B);
