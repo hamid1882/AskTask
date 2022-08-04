@@ -185,7 +185,7 @@ export default function Signup({
           width: 100%;
           height: 20em;
           border-radius: 2em;
-          padding: 1.5em 1.5em;
+          padding: 1em 1em;
         }
       }
       `}
