@@ -1,10 +1,11 @@
 import axios from 'axios';
-import React,{useState,useEffect, useRef} from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { parseDate } from '../Utils/DateTimeUtils';
 import AddTaskPopup from './AddTaskPopup'
 import OptionsBar from './OptionsBar';
 import TaskTracker from './TaskTracker';
 
-export default function TaskContainer({habitList, dataId, setUserData}) {
+export default function TaskContainer({ habitList, dataId, setUserData }) {
   const [isPopup, setIsPopup] = useState(false);
   const [allHabits, setAllHabits] = useState([]);
   const [isOptions, setIsOptions] = useState(false);
@@ -27,11 +28,11 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   const handleScroll = (id, value) => {
     setCurrentHabitId(id);
 
-    if(currentHabitId === id) {
+    if (currentHabitId === id) {
       scrollRef.current ? scrollRef.current.scrollLeft += value : null;
     }
   }
-  
+
   const handleToggleOptions = (id) => {
     setIsShowOptionId(id);
     setCurrentHabitId(id);
@@ -46,7 +47,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
     const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
 
-    if(checkIsAllChecked.length === 0 ) {
+    if (checkIsAllChecked.length === 0) {
       selectedHabit.taskCompleted = true;
     } else {
       selectedHabit.taskCompleted = false;
@@ -60,7 +61,7 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   }
 
   const handleEdit = (id) => {
-    const newHabitList =  habitList.find(val => val.id === id);
+    const newHabitList = habitList.find(val => val.id === id);
     setEditHabit(newHabitList);
     setIsPopup(true);
     setIsOptions(false);
@@ -68,11 +69,11 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
   }
 
   const handleDelete = (id) => {
-    const newHabitList =  habitList.filter(val => val.id !== id);
+    const newHabitList = habitList.filter(val => val.id !== id);
     const userId = JSON.parse(localStorage.getItem('user')).data_id;
-    
-    const newData = {data : { [userId] : { habit : newHabitList}} }
-    
+
+    const newData = { data: { [userId]: { habit: newHabitList } } }
+
     setIsDeleteLoading(true);
     axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + dataId, newData).then(res => {
       setUserData(res.data.data[userId]);
@@ -84,24 +85,24 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       setIsDeleteLoading(false);
     })
   }
-  
+
   const handleHabitStatus = (status, id) => {
 
-    if(status === true) {
-      setIsUpdating(true);  
+    if (status === true) {
+      setIsUpdating(true);
     }
-    
-    if(status === false) {
+
+    if (status === false) {
       setIsUpdatingFailed(true);
     }
-    
+
     setSelectedId(id);
-    
-    const selectedHabit = habitList.find(val => val.id === id); 
+
+    const selectedHabit = habitList.find(val => val.id === id);
 
     const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
 
-    if(checkIsAllChecked && checkIsAllChecked.length <= 1 ) {
+    if (checkIsAllChecked && checkIsAllChecked.length <= 1) {
       selectedHabit.taskCompleted = true;
     } else {
       selectedHabit.taskCompleted = false;
@@ -112,23 +113,23 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
     const userDataId = JSON.parse(localStorage.getItem('user')).data_id;
 
 
-    if(selectedHabitDate) {
+    if (selectedHabitDate) {
       selectedHabitDate.isCompleted = status === true ? true : false;
       selectedHabitDate.isUpcoming = status === true ? false : true;
       selectedHabitDate.checked = true;
     }
 
-    if(selectedHabitDate && selectedHabitDate.scroll === 60) {
+    if (selectedHabitDate && selectedHabitDate.scroll === 60) {
       handleScroll(id, 60);
-    } 
+    }
 
-    const sortedData = habitList.sort((a,b) => {
+    const sortedData = habitList.sort((a, b) => {
       return a.taskCompleted - b.taskCompleted;
     });
 
     setAllHabits(sortedData);
 
-    const newData = {data : { [userDataId] : { habit : sortedData }} };
+    const newData = { data: { [userDataId]: { habit: sortedData } } };
 
     axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + userId, newData).then(res => {
       const parsedData = res.data.data[userDataId].habit;
@@ -136,43 +137,43 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
       setAllHabits(parsedData);
       setIsUpdating(false);
       setIsUpdatingFailed(false);
-        setSelectedHabitDay(isSelectedHabitDay + 1);
+      setSelectedHabitDay(isSelectedHabitDay + 1);
     }).catch(err => {
-        console.log("error:", err);
+      console.log("error:", err);
       setIsUpdating(false);
       setIsUpdatingFailed(false);
     })
-      setIsPopup(false);
-    }
+    setIsPopup(false);
+  }
 
-    const handleCheckDay = (id, value) => {
+  const handleCheckDay = (id, value) => {
 
-      const selectedHabit = habitList.find(val => val.id === id); 
-      
-      const selectedHabitDay = selectedHabit.days.find(val => {
-        if(val.value === value) {
-          return val
-        } 
-        
-        if (val.checked === false) {
-          console.log("hello")
-          return val
-        }
+    const selectedHabit = habitList.find(val => val.id === id);
 
-      }); 
-
-      setSelectedHabitDay(selectedHabitDay.value);
-    }
-
-    const handleMotiveHover = (isOver, id) => {
-      if(isOver) {
-        setIsHovered(true);
-        setIsShowOptionId(id);
-      } else {
-        setIsHovered(false);
-        setIsShowOptionId(id);
+    const selectedHabitDay = selectedHabit.days.find(val => {
+      if (val.value === value) {
+        return val
       }
+
+      if (val.checked === false) {
+        console.log("hello")
+        return val
+      }
+
+    });
+
+    setSelectedHabitDay(selectedHabitDay.value);
+  }
+
+  const handleMotiveHover = (isOver, id) => {
+    if (isOver) {
+      setIsHovered(true);
+      setIsShowOptionId(id);
+    } else {
+      setIsHovered(false);
+      setIsShowOptionId(id);
     }
+  }
 
   useEffect(() => {
     setIsLoading(habitList ? false : true);
@@ -182,70 +183,71 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
 
   return (
     <div className="task-container">
-      { allHabits && allHabits.length > 0
-      ? <img 
-        src="/static/images/plus.svg" 
-        alt="add" 
-        onClick={handlePopupOpen} 
-        className="add-floating-icon" 
-      />
-      : null
-      }
-      <div className={allHabits &&  allHabits.length > 4 ? "task-bar-big"  :"task-bar"}>
-      {
-        isLoading ? 
-        <div style={{display: "flex", justifyContent: "center", alignItems: "center", height: "100%"}}>
-          <img 
-          src="/static/loader/new-loader.svg" 
-          alt="loading" 
-          style={{width: "10em", height: "10em"}}
+      {allHabits && allHabits.length > 0
+        ? <img
+          src="/static/images/plus.svg"
+          alt="add"
+          onClick={handlePopupOpen}
+          className="add-floating-icon"
         />
-        </div> : null
+        : null
       }
-    {
-      allHabits && allHabits.length < 1
-          ? <div  className="task-container-inner">
+      <div className={allHabits && allHabits.length > 4 ? "task-bar-big" : "task-bar"}>
+        {
+          isLoading ?
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+              <img
+                src="/static/loader/new-loader.svg"
+                alt="loading"
+                style={{ width: "10em", height: "10em" }}
+              />
+            </div> : null
+        }
+        {
+          allHabits && allHabits.length < 1
+            ? <div className="task-container-inner">
               <h3 className="qoute">Your Habits will determine your future</h3>
               <img src="/static/images/plus.svg" alt="add" onClick={handlePopupOpen} className="add-icon" />
               <p className="create-text">Create now</p>
-            </div>  
-          :
-          allHabits && allHabits.map((data, idx) => (
-              <div key={data.id} className={data.taskCompleted ? "task-item-completed" :"task-item"}>
-                { isOptions && isShowOptionId === data.id ?
-                  <OptionsBar 
-                    id={data.id} 
-                    handleDelete={handleDelete} 
-                    isDeleteLoading={isDeleteLoading} 
+            </div>
+            :
+            allHabits && allHabits.map((data, idx) => (
+              <div key={data.id} className={data.taskCompleted ? "task-item-completed" : "task-item"}>
+                {isOptions && isShowOptionId === data.id ?
+                  <OptionsBar
+                    id={data.id}
+                    handleDelete={handleDelete}
+                    isDeleteLoading={isDeleteLoading}
                     handleEdit={handleEdit}
-                    currentHabitId={isShowOptionId} 
+                    currentHabitId={isShowOptionId}
                     scrollRef={scrollRef}
                     isCompleted={data.taskCompleted}
                   />
-                : null
+                  : null
                 }
-                <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
-                  <p style={{background: data.taskCompleted ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.4)",borderRadius: "50%",padding: "14px 18px", }}>{idx + 1 }</p>
-                  <div style={{display: "grid", placeItems: "self-start"}}>
-                    {
+                <div style={{ display: "flex", alignItems: "center", gap: "1em" }}>
+                  <p style={{ background: data.taskCompleted ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.4)", borderRadius: "50%", padding: "14px 18px", }}>{idx + 1}</p>
+                  <div style={{ display: "grid", placeItems: "self-start" }}>
+                    {/* {
                       isHovered && isShowOptionId === data.id ?
-                      <h1
-                        className="task-title-hovered" 
-                        onMouseOver={() => handleMotiveHover(true, data.id)} 
-                        onMouseOut={() => handleMotiveHover(false, data.id)}
+                        <h1
+                          className="task-title-hovered"
+                          onMouseOver={() => handleMotiveHover(true, data.id)}
+                          onMouseOut={() => handleMotiveHover(false, data.id)}
                         >
                           ❝{data.motive.toUpperCase()}❞
-                      </h1>
-                    : 
-                      <h1 
-                        className="task-title" 
-                        onMouseOver={() => handleMotiveHover(true, data.id)} 
-                        onMouseOut={() => handleMotiveHover(false, data.id)}
-                        >{data.name.toUpperCase()} ({data.totalDays} Days)
-                     </h1>
-                    }
-                    <TaskTracker  
+                        </h1>
+                        :
+                    } */}
+                    <h1
+                      className="task-title"
+                      onMouseOver={() => handleMotiveHover(true, data.id)}
+                      onMouseOut={() => handleMotiveHover(false, data.id)}
+                    >{data.name.toUpperCase()} ({data.totalDays} Days)
+                    </h1>
+                    <TaskTracker
                       data={data}
+                      dateCreated={data.dateCreated}
                       selectedHabitId={isSelectedHabitDay}
                       selectedId={selectedId}
                       handleScroll={handleScroll}
@@ -256,91 +258,91 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
                     />
                   </div>
                 </div>
-                <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
-                  <div className={data.taskCompleted ? "day-check-completed": "day-check"}>
+                <div style={{ display: "flex", alignItems: "center", gap: "1em" }} title={parseDate(data.dateCreated, true, true)}>
+                  <div className={data.taskCompleted ? "day-check-completed" : "day-check"}>
                     {
                       !data.taskCompleted ?
-                    <h3 className="check-text" 
-                      onClick={() => handleStart(data.id)}>
-                        {
-                          selectedId === data.id 
-                          ?`Day-${isSelectedHabitDay}` 
-                          : "Start"
-                        }
-                    </h3>
-                    :
-                    <h3 className="check-text">Completed</h3>
-                    }
-                    { 
-                      data.id === selectedId && !data.taskCompleted
-                      ?
-                      <div className="checkbar">
-                      {
-                        !isUpdating 
-                        ?
-                        <img 
-                        src="/static/images/right.svg" 
-                        alt="check" 
-                        className='check-icon-1'
-                        onClick={() => handleHabitStatus(true, data.id)}
-                        />
+                        <h3 className="check-text"
+                          onClick={() => handleStart(data.id)}>
+                          {
+                            selectedId === data.id
+                              ? `Day-${isSelectedHabitDay}`
+                              : "Start"
+                          }
+                        </h3>
                         :
-                        <img 
-                          src="/static/loader/new-loader.svg" 
-                          alt="check" 
-                          className='check-icon-1'
-                          style={{width: "25px", height: "25px"}}
-                        />
-                      }
-                      {
-                        !isUpdatingFailed
+                        <h3 className="check-text">Completed</h3>
+                    }
+                    {
+                      data.id === selectedId && !data.taskCompleted
                         ?
-                        <img 
-                        src="/static/images/wrong.svg" 
-                        alt="check" 
-                        className='check-icon-2' 
-                        onClick={() => handleHabitStatus(false, data.id)}
-                      />
-                      :
-                        <img 
-                          src="/static/loader/new-loader.svg" 
-                          alt="check" 
-                          className='check-icon-1'
-                          style={{width: "25px", height: "25px"}}
-                        />
-                      }
-                    </div>
-                    : null
+                        <div className="checkbar">
+                          {
+                            !isUpdating
+                              ?
+                              <img
+                                src="/static/images/right.svg"
+                                alt="check"
+                                className='check-icon-1'
+                                onClick={() => handleHabitStatus(true, data.id)}
+                              />
+                              :
+                              <img
+                                src="/static/loader/new-loader.svg"
+                                alt="check"
+                                className='check-icon-1'
+                                style={{ width: "25px", height: "25px" }}
+                              />
+                          }
+                          {
+                            !isUpdatingFailed
+                              ?
+                              <img
+                                src="/static/images/wrong.svg"
+                                alt="check"
+                                className='check-icon-2'
+                                onClick={() => handleHabitStatus(false, data.id)}
+                              />
+                              :
+                              <img
+                                src="/static/loader/new-loader.svg"
+                                alt="check"
+                                className='check-icon-1'
+                                style={{ width: "25px", height: "25px" }}
+                              />
+                          }
+                        </div>
+                        : null
                     }
                   </div>
-                  <div 
-                    style={{background: isOptions && data.id === isShowOptionId && "rgba(255,255,255, 0.5)"}} 
+                  <div
+                    style={{ background: isOptions && data.id === isShowOptionId && "rgba(255,255,255, 0.5)" }}
                     className="task-toggle-options" onClick={() => handleToggleOptions(data.id)}>
-                    <img 
-                    src={isOptions && data.id === isShowOptionId ? "/static/images/uparrow.svg" :"/static/images/downarrow.svg" }
-                    onClick={() => handleToggleOptions(data.id)} alt="up" />
+                    <img
+                      src={isOptions && data.id === isShowOptionId ? "/static/images/uparrow.svg" : "/static/images/downarrow.svg"}
+                      onClick={() => handleToggleOptions(data.id)} alt="up" />
                   </div>
                 </div>
               </div>
-          ))
+            ))
         }
-        </div>
-        {
-          isPopup ?
-            <AddTaskPopup
+      </div>
+      {
+        isPopup ?
+          <AddTaskPopup
             setIsPopup={setIsPopup}
             setAllHabits={setAllHabits}
             allHabits={allHabits}
-            dataId={dataId} 
+            dataId={dataId}
             editHabit={editHabit}
             setEditHabit={setEditHabit}
             isEdit={isEdit}
             setSelectedHabitDay={setSelectedHabitDay}
             setIsHovered={setIsHovered}
-            />
-            : null
+          />
+          : null
       }
-        <style jsx>{
+      <style jsx>{
         `
         .task-container {
           width: 100%;
@@ -503,16 +505,14 @@ export default function TaskContainer({habitList, dataId, setUserData}) {
         }
 
         .task-title-hovered {
-          width: 40;
-          height: 1.5em;
-          font-family: roboto;
-          font-weight: bold;
-          font-size: 16px;
-          color: rgba(0,0,0,0.7);
+          width: 26.2em;
+          height: 1.2em;
+          font-family: sans-serif;
+          font-size: 20px;
+          color: rgba(0,0,0,0.5);
           letter-spacing: 0.1em;
           overflow: hidden;
-          transform: translate(20%, -20%);
-          transition: transform 0.8s;
+          background: linear-gradient(to bottom, rgba(255,255,255,0.4) 100%, rgba(255,255,30) 30%);
         }
 
         .habit-progress {

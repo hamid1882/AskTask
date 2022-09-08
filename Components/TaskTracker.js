@@ -1,12 +1,13 @@
-import React,{useState} from 'react'
+import React, { useState } from 'react'
+import { parseDate } from '../Utils/DateTimeUtils';
 
 export default function TaskTracker({
-  data, currentHabitId, scrollRef, selectedId, selectedHabitId, handleScroll, isCompleted, handleCheckDay}) {
+  data, currentHabitId, scrollRef, selectedId, selectedHabitId, handleScroll, isCompleted, handleCheckDay, dateCreated }) {
 
   const [isPagination, setIsPagination] = useState(false);
 
   const handlePaginationHover = (isHovered) => {
-    if(isHovered) {
+    if (isHovered) {
       setIsPagination(isHovered);
     } else {
       setIsPagination(isHovered);
@@ -15,73 +16,76 @@ export default function TaskTracker({
 
   return (
     <div>
-    <div 
-     className="habit-progress"
-     onMouseOver={() => data.id === selectedId ? handlePaginationHover(true) : {}}
-     >
-      {
-        isPagination && data.id === selectedId ? 
-        <div
+      <div
+        className="habit-progress"
         onMouseOver={() => data.id === selectedId ? handlePaginationHover(true) : {}}
-        onMouseOut={() => data.id === selectedId ? handlePaginationHover(false) : {}}
-           className="Next" onClick={() => handleScroll(data.id, 60)}>
-          <img  
-            className="right-scroll"
-            src="/static/images/right-arrow.svg" 
-            alt="right" 
-            style={{height: "1.5em", width: "1.5em"}}
-            />
-        </div> : null
-      }
-      <div 
-        style={{zIndex: "2"}}
-          className={data.days.length >= 6 
-            ? ["track-habit", "track-habit-padding-lg"].join(" ") 
+      >
+        {
+          isPagination && data.id === selectedId ?
+            <div
+              onMouseOver={() => data.id === selectedId ? handlePaginationHover(true) : {}}
+              onMouseOut={() => data.id === selectedId ? handlePaginationHover(false) : {}}
+              className="Next" onClick={() => handleScroll(data.id, 60)}>
+              <img
+                className="right-scroll"
+                src="/static/images/right-arrow.svg"
+                alt="right"
+                style={{ height: "1.5em", width: "1.5em" }}
+              />
+            </div> : null
+        }
+        <div
+          style={{ zIndex: "2" }}
+          className={data.days.length >= 6
+            ? ["track-habit", "track-habit-padding-lg"].join(" ")
             : 'track-habit-limit'} ref={data.id === currentHabitId ? scrollRef : null}>
           {
             data.days && data.days.map(val => (
-                <span className="progress-icon" key={val.value}>
-                  {val.value == 1 ? "" : 
-                  <span 
-                    className={val.checked 
-                      ? val.isCompleted 
-                        ? isCompleted 
-                          ? "habit-done-completed" 
-                      :  "habit-done" 
-                        : isCompleted 
-                          ? "habit-missed-completed" 
-                            : "habit-missed" 
-                              : "habit-upcoming"}>-</span>}
-                  <span 
+              <span
+                className="progress-icon"
+                key={val.value}
+                title={val.goalDate ? parseDate(val.goalDate, true, true) : "No Date Available"}>
+                {val.value == 1 ? "" :
+                  <span
+                    className={val.checked
+                      ? val.isCompleted
+                        ? isCompleted
+                          ? "habit-done-completed"
+                          : "habit-done"
+                        : isCompleted
+                          ? "habit-missed-completed"
+                          : "habit-missed"
+                      : "habit-upcoming"}>-</span>}
+                <span
                   onClick={() => data.id === selectedId ? handleCheckDay(data.id, val.value) : {}}
-                  className={[selectedHabitId === val.value 
-                    && data.id === selectedId 
-                    ? "day-value, currentBorder" : "day-value", val.checked 
-                      ? val.isCompleted 
-                        ? isCompleted 
-                          ? "habit-done, habit-count-bg-done-completed" 
-                    : "habit-done, habit-count-bg-done" 
-                      : isCompleted ? "habit-missed, habit-count-bg-missed-completed"  
-                        : "habit-missed, habit-count-bg-missed" 
-                          : "habit-upcoming"].join(" ")}>
-                            {val.value}
+                  className={[selectedHabitId === val.value
+                    && data.id === selectedId
+                    ? "day-value, currentBorder" : "day-value", val.checked
+                    ? val.isCompleted
+                      ? isCompleted
+                        ? "habit-done, habit-count-bg-done-completed"
+                        : "habit-done, habit-count-bg-done"
+                      : isCompleted ? "habit-missed, habit-count-bg-missed-completed"
+                        : "habit-missed, habit-count-bg-missed"
+                    : "habit-upcoming"].join(" ")}>
+                  {val.value}
                 </span>
-                  {val.value == data.days.length ? "" : 
-                  <span 
-                  className={val.checked 
-                              ? val.isCompleted 
-                                ? isCompleted 
-                                 ? "habit-done-completed" 
-                              :  "habit-done"
-                                : isCompleted 
-                                  ? "habit-missed-completed" 
-                                : "habit-missed" 
-                                  : "habit-upcoming"}>-</span>}
-                </span>
+                {val.value == data.days.length ? "" :
+                  <span
+                    className={val.checked
+                      ? val.isCompleted
+                        ? isCompleted
+                          ? "habit-done-completed"
+                          : "habit-done"
+                        : isCompleted
+                          ? "habit-missed-completed"
+                          : "habit-missed"
+                      : "habit-upcoming"}>-</span>}
+              </span>
             ))
           }
         </div>
-            {/* {
+        {/* {
               data.days.length >= 10 ?
               <div className="pagination">
                 <img  
@@ -349,6 +353,6 @@ export default function TaskTracker({
 
         `
       }</style>
-      </div>
+    </div>
   )
 }

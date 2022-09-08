@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 
 export default function TaskDetailsPage() {
@@ -11,32 +11,32 @@ export default function TaskDetailsPage() {
 
   useEffect(() => {
     const savedData = JSON.parse(localStorage.getItem("all_tasks"));
-    const filteredData = savedData.find((val) => val.name === task.replace(/-/," "));
+    const filteredData = savedData.find((val) => val.name === task.replace(/-/, " "));
     setTaskData(filteredData)
   }, []);
 
   return (
     <div className='task-details-container'>
       <div className='task-details-card'>
-        <h2>{task && task.toUpperCase().replace(/-/g, " " )}</h2>
+        <h2>{task && task.toUpperCase().replace(/-/g, " ")}</h2>
         <div>
-          <h3>To-do List</h3>  
+          <h3>To-do List</h3>
           {
-          taskData.todo ? taskData.todo.map((val, idx) => (
-            <div key={val.id} className="task-list">
-            <div style={{display: "flex", alignItems: "center", gap: "1em"}}>
-              <p>{val.id}</p>
-              <h4>{val.name.toUpperCase()}</h4>
-            </div>
-            <input type="checkbox" checked={val.isCompleted} />
-          </div>
-          ))
-          : <h4>No To-do's Added</h4>
+            taskData.todo ? taskData.todo.map((val, idx) => (
+              <div key={val.id} className="task-list">
+                <div style={{ display: "flex", alignItems: "center", gap: "1em" }}>
+                  <p>{val.id}</p>
+                  <h4>{val.name.toUpperCase()}</h4>
+                </div>
+                <input type="checkbox" checked={val.isCompleted} />
+              </div>
+            ))
+              : <h4>No To-do's Added</h4>
           }
         </div>
       </div>
-    <style jsx>{
-      `
+      <style jsx>{
+        `
       .task-details-container{
         height: calc(100vh - 2em);
         width: 100%;
@@ -66,7 +66,7 @@ export default function TaskDetailsPage() {
 
       }
       `
-    }</style>
+      }</style>
     </div>
   )
 }

@@ -1,9 +1,11 @@
 import axios from 'axios';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
+
 import Input from "./Input.js";
+import { weekDays } from './weekDays.js';
 
 export default function AddTaskPopup({
-  setIsPopup, allHabits, setAllHabits, dataId, editHabit, setEditHabit, isEdit, setIsEdit, setSelectedHabitDay, setIsHovered}) {
+  setIsPopup, allHabits, setAllHabits, dataId, editHabit, setEditHabit, isEdit, setIsEdit, setSelectedHabitDay, setIsHovered }) {
   const [habitName, setHabitName] = useState("");
   const [habitMotive, setHabitMotive] = useState("");
   const [days, setDays] = useState(21);
@@ -11,11 +13,11 @@ export default function AddTaskPopup({
   const [isRepeating, setIsRepeating] = useState(false);
 
   const handleInputChange = (e, name) => {
-    if(name === "name" && e.target.value.length <= 35) { 
+    if (name === "name" && e.target.value.length <= 35) {
       setHabitName(e.target.value);
-    } else if(name === "motive") {
+    } else if (name === "motive") {
       setHabitMotive(e.target.value);
-    } else if(name === "days") {
+    } else if (name === "days") {
       setDays(e.target.value);
     } else {
       alert("Minimum value must be between 1 - 35 characters")
@@ -24,7 +26,7 @@ export default function AddTaskPopup({
 
   const handleEditHabit = (name) => {
 
-    if(name === "repeat") {
+    if (name === "repeat") {
       setIsRepeating(true);
       const selectedHabit = allHabits.find(val => val.id === editHabit.id);
 
@@ -32,29 +34,38 @@ export default function AddTaskPopup({
 
       let scroll = [];
 
-      for(let i=1; i<=days; i++) {
+      const getGoalDate = (initializer) => {
+
+        let date = new Date();
+
+        return new Date(date.setDate(date.getDate() + initializer));
+
+      }
+
+      for (let i = 1; i <= days; i++) {
         dayArr.push({
           value: i,
           isCompleted: false,
           isUpcoming: true,
           checked: false,
-          scroll:  i >= 6 ? 60 * 1 : 0,
+          scroll: i >= 6 ? 60 * 1 : 0,
+          goalDate: getGoalDate(i - 1),
         });
       }
 
       selectedHabit.name = habitName;
       selectedHabit.motive = habitMotive;
-      selectedHabit.days= dayArr;
+      selectedHabit.days = dayArr;
       selectedHabit.scroll = scroll;
       selectedHabit.taskCompleted = false;
       selectedHabit.totalDays = days;
-  
+
       const userId = JSON.parse(localStorage.getItem('user')).data_id;
       const id = JSON.parse(localStorage.getItem('user')).id;
 
-  
-      const newData = {data : { [userId] : { habit : allHabits}} };
-  
+
+      const newData = { data: { [userId]: { habit: allHabits } } };
+
       axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + id, newData).then(res => {
         console.log(allHabits)
         setAllHabits(res.data.data[userId].habit);
@@ -72,12 +83,12 @@ export default function AddTaskPopup({
       const selectedHabit = allHabits.find(val => val.id === editHabit.id);
       selectedHabit.name = habitName;
       selectedHabit.motive = habitMotive;
-  
+
       const userId = JSON.parse(localStorage.getItem('user')).data_id;
       const id = JSON.parse(localStorage.getItem('user')).id;
-  
-      const newData = {data : { [userId] : { habit : allHabits}} };
-  
+
+      const newData = { data: { [userId]: { habit: allHabits } } };
+
       axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + id, newData).then(res => {
         // setAllHabits(res.data.data[userId].habit);
         setIsUpdating(false)
@@ -90,41 +101,51 @@ export default function AddTaskPopup({
       })
     }
   }
-  
+
   const handleAddNewHabit = () => {
     const userId = JSON.parse(localStorage.getItem('user')).data_id;
     const id = JSON.parse(localStorage.getItem('user')).id;
     setIsHovered(false);
-    
+
     const habitId = allHabits.length > 0 && allHabits[0].id ? allHabits[0].id : 0;
 
     let dayArr = [];
 
     let scroll = [];
 
-    for(let i=1; i<=days; i++) {
+    const getGoalDate = (initializer) => {
+
+      let date = new Date();
+
+      return new Date(date.setDate(date.getDate() + initializer));
+
+    }
+
+    for (let i = 1; i <= days; i++) {
       dayArr.push({
         value: i,
         isCompleted: false,
         isUpcoming: true,
         checked: false,
-        scroll:  i >= 6 ? 60 * 1 : 0,
+        scroll: i >= 6 ? 60 * 1 : 0,
+        goalDate: getGoalDate(i - 1),
       });
     }
 
     const habitData = {
-      name: habitName,  
+      name: habitName,
       motive: habitMotive,
       days: dayArr,
       id: habitId + 1,
       totalDays: days,
       scroll: scroll,
       taskCompleted: false,
+      dateCreated: new Date(),
     }
 
-    if(habitName.length > 0 && habitMotive.length > 0 && days !== 0) {
-      
-      if(isEdit === true) {
+    if (habitName.length > 0 && habitMotive.length > 0 && days !== 0) {
+
+      if (isEdit === true) {
         let selectedHabit = allHabits.find(val => val.id === editHabit.id);
         selectedHabit.name = habitName;
         selectedHabit.motive = habitMotive;
@@ -133,75 +154,75 @@ export default function AddTaskPopup({
         allHabits.unshift(habitData);
       }
 
-      const newData = {data : { [userId] : { habit : allHabits}} };
+      const newData = { data: { [userId]: { habit: allHabits } } };
 
       axios.put(process.env.NEXT_PUBLIC_URL + "/data/" + id, newData).then(res => {
         const parsedData = res.data.data[userId];
         // setAllHabits(parsedData);
-        
-    }).catch(err => {
+
+      }).catch(err => {
         console.log("error:", err);
-    })
+      })
       setIsPopup(false);
     } else {
       alert("Please make sure you have added all the data in all the fields");
     }
 
     localStorage.setItem("allHabits", JSON.stringify(allHabits));
-    }
+  }
 
-    useEffect(() => {
-      if(isEdit === true) {
-        setHabitName(editHabit.name);
-        setHabitMotive(editHabit.motive);
-        setDays(editHabit.totalDays);
-      }
-    }, []);
+  useEffect(() => {
+    if (isEdit === true) {
+      setHabitName(editHabit.name);
+      setHabitMotive(editHabit.motive);
+      setDays(editHabit.totalDays);
+    }
+  }, []);
 
 
   return (
     <div className="container">
       <div className="popup-container">
-        <img 
-          src="/static/images/cross.svg" 
-          alt="cross" 
-          className="cancel-icon" 
+        <img
+          src="/static/images/cross.svg"
+          alt="cross"
+          className="cancel-icon"
           onClick={() => setIsPopup(false)}
         />
         <h2 className="title">{isEdit ? "Habit Details" : "Create A New Habit"}</h2>
         <div className="input-bar">
-          <Input 
-            title = {"Habit Name"}
-            type = {"text"}
-            value = {habitName}
-            name = {"name"}
-            handleInputChange = {handleInputChange}
-            placeholder = {"Enter your Habit name"}
+          <Input
+            title={"Habit Name"}
+            type={"text"}
+            value={habitName}
+            name={"name"}
+            handleInputChange={handleInputChange}
+            placeholder={"Enter your Habit name"}
             theme={"dark"}
           />
         </div>
         <div className="input-bar">
-          <Input 
-            title = {"Motive of the Habit"}
-            type = {"text"}
-            value = {habitMotive}
-            name = {"motive"}
-            handleInputChange = {handleInputChange}
-            placeholder = {"Enter your Habit Motive"}
+          <Input
+            title={"Motive of the Habit"}
+            type={"text"}
+            value={habitMotive}
+            name={"motive"}
+            handleInputChange={handleInputChange}
+            placeholder={"Enter your Habit Motive"}
             theme={"dark"}
           />
         </div>
         <div className="date-input-section">
           <div className="small-title">Select Goal</div>
-          <input 
+          <input
             type="number"
             className='date-picker'
-            onChange={(e) => handleInputChange(e, "days")} 
+            onChange={(e) => handleInputChange(e, "days")}
             value={days}
-            />
+          />
         </div>
-        <div style={{display:'flex', alignItems: 'center', gap: "0.7em"}}>
-        {/* {isEdit ?
+        <div style={{ display: 'flex', alignItems: 'center', gap: "0.7em" }}>
+          {/* {isEdit ?
             <button 
               disabled={isEdit}
               className={isEdit ? "btn-dark-disabled" :"btn-dark"}
@@ -209,40 +230,40 @@ export default function AddTaskPopup({
               >Repeat
             </button>
             : null} */}
-            {
-              !isEdit 
-              ? 
-              <button 
+          {
+            !isEdit
+              ?
+              <button
                 className={"btn-dark"}
                 onClick={handleAddNewHabit}
-                >Create Now
+              >Create Now
               </button>
-            :
-            <div className="date-input-section">
-              <button
-                   className={!isRepeating ? "btn-dark" : "btn-dark-img"}
-                   onClick={() => handleEditHabit("repeat")}
-                   >
-                    { !isRepeating
-                    ? "Start as new" 
-                    : <img style={{width: '4em', height: '2em',}} src="/static/loader/button-loader.svg"/>
-                    }
-              </button>
-              <button
-                 className={!isUpdating ? "btn-dark" : "btn-dark-img"}
-                 onClick={handleEditHabit}
-                 >
-                  { !isUpdating 
-                  ? "Update" 
-                  : <img style={{width: '4em', height: '2em',}} src="/static/loader/button-loader.svg"/>
+              :
+              <div className="date-input-section">
+                <button
+                  className={!isRepeating ? "btn-dark" : "btn-dark-img"}
+                  onClick={() => handleEditHabit("repeat")}
+                >
+                  {!isRepeating
+                    ? "Start as new"
+                    : <img style={{ width: '4em', height: '2em', }} src="/static/loader/button-loader.svg" />
                   }
-             </button>
-             </div>
-            }
+                </button>
+                <button
+                  className={!isUpdating ? "btn-dark" : "btn-dark-img"}
+                  onClick={handleEditHabit}
+                >
+                  {!isUpdating
+                    ? "Update"
+                    : <img style={{ width: '4em', height: '2em', }} src="/static/loader/button-loader.svg" />
+                  }
+                </button>
+              </div>
+          }
         </div>
       </div>
       <style jsx>
-        { 
+        {
           `
 
           input[type="time"]::-webkit-calendar-picker-indicator {
