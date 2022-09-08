@@ -1,3 +1,4 @@
+import { FontWeight } from '@cloudinary/url-gen/qualifiers';
 import axios from 'axios';
 import React, { useState, useEffect, useRef } from 'react'
 import { parseDate } from '../Utils/DateTimeUtils';
@@ -22,6 +23,7 @@ export default function TaskContainer({ habitList, dataId, setUserData }) {
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [isShowOptionId, setIsShowOptionId] = useState(1);
   const [isHovered, setIsHovered] = useState(false);
+  const [isActiveUpdates, setIsActiveUpdates] = useState(false);
 
   let scrollRef = useRef(null);
 
@@ -43,6 +45,7 @@ export default function TaskContainer({ habitList, dataId, setUserData }) {
     const selectedHabit = allHabits.find(val => val.id === id);
     const selectedHabitDate = id && selectedHabit.days.find(val => val.checked === false);
     setSelectedId(id);
+    setIsActiveUpdates(true);
     selectedHabitDate && setSelectedHabitDay(selectedHabitDate.value);
 
     const checkIsAllChecked = selectedHabit.days.filter(val => val.checked === false);
@@ -175,6 +178,16 @@ export default function TaskContainer({ habitList, dataId, setUserData }) {
     }
   }
 
+  const getUpdatedDateOfGoal = (data) => {
+    const findLastUpdates = data.filter(val => val.checked ? val.checked : null);
+
+    const date = new Date(findLastUpdates[findLastUpdates.length - 1].goalDate);
+
+    const upcomingDate = new Date(date.setDate(date.getDate() + 1));
+
+    return upcomingDate;
+  }
+
   useEffect(() => {
     setIsLoading(habitList ? false : true);
     // getAllHabits();
@@ -258,23 +271,35 @@ export default function TaskContainer({ habitList, dataId, setUserData }) {
                     />
                   </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "1em" }} title={parseDate(data.dateCreated, true, true)}>
+                <div style={{ display: "flex", alignItems: "center", gap: "1em" }}>
+                  {isActiveUpdates && selectedId === data.id
+                    ? <p onClick={() => setIsActiveUpdates(false)} style={{ color: "rgba(0,0,0,0.5", fontWeight: "bold" }}>Done</p>
+                    : null
+                  }
                   <div className={data.taskCompleted ? "day-check-completed" : "day-check"}>
                     {
                       !data.taskCompleted ?
                         <h3 className="check-text"
                           onClick={() => handleStart(data.id)}>
                           {
-                            selectedId === data.id
+                            selectedId === data.id && isActiveUpdates
                               ? `Day-${isSelectedHabitDay}`
-                              : "Start"
+                              : data.days[0].checked ?
+                                <div>
+                                  <span style={{ color: "green" }}>Continue</span>
+                                  <br />
+                                  <span style={{ fontSize: "12px", fontWeight: "800" }}>
+                                    {parseDate(getUpdatedDateOfGoal(data.days), true, true)}
+                                  </span>
+                                </div> :
+                                "Start"
                           }
                         </h3>
                         :
                         <h3 className="check-text">Completed</h3>
                     }
                     {
-                      data.id === selectedId && !data.taskCompleted
+                      data.id === selectedId && !data.taskCompleted && isActiveUpdates
                         ?
                         <div className="checkbar">
                           {

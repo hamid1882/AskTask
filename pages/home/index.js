@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from "next/link";
 import Topbar from '../../Components/Topbar/Topbar';
 import Sidebar from '../../Components/Sidebar';
@@ -20,7 +20,7 @@ export default function home() {
   const getAllData = () => {
     const user = JSON.parse(localStorage.getItem("user"));
 
-    if(user) {
+    if (user) {
       axios.get(`${process.env.NEXT_PUBLIC_URL + "/data"}`,).then(res => {
         const resultData = res.data.find(val => val.data[user.data_id]);
         const parsedData = resultData.data[user.data_id];
@@ -33,11 +33,11 @@ export default function home() {
   }
 
   useEffect(() => {
-    if(typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
       const isLogged = localStorage.getItem("isLoggedIn");
       const user = JSON.parse(localStorage.getItem("user"));
       setIsAvatar("/static/loader/mini-loader.svg")
-      if(user) {
+      if (user) {
         setIsAvatar(user.avatar);
         setUserName(user.full_name);
         setUserDataId(user.data_id);
@@ -45,24 +45,24 @@ export default function home() {
     }
 
     getAllData();
-    }, []);
+  }, []);
 
 
   return (
     <div className='home-container'>
-      <Topbar 
+      <Topbar
         userName={userName}
         isAvatar={isAvatar}
         handleLogout={handleLogout}
         setIsAvatar={setIsAvatar}
       />
       <div className="main-container">
-      <Sidebar />
-      <TaskContainer 
-        habitList={userData.habit}
-        setUserData={setUserData}
-        dataId={dataId}
-      />
+        <Sidebar />
+        <TaskContainer
+          habitList={userData.habit}
+          setUserData={setUserData}
+          dataId={dataId}
+        />
       </div>
       <style jsx>{
         `
