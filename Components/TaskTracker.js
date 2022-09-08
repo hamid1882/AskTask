@@ -6,25 +6,25 @@ export default function TaskTracker({
 
   const [isPagination, setIsPagination] = useState(false);
 
-  const handlePaginationHover = (isHovered) => {
-    if (isHovered) {
-      setIsPagination(isHovered);
+  const handlePaginationHover = (isHovered, e) => {
+    if (isHovered && scrollRef.current.scrollWidth < scrollRef.current.scrollLeft + scrollRef.current.clientWidth) {
+      setIsPagination(false);
     } else {
-      setIsPagination(isHovered);
+      setIsPagination(true);
     }
   }
 
   return (
-    <div>
+    <div >
       <div
         className="habit-progress"
-        onMouseOver={() => data.id === selectedId ? handlePaginationHover(true) : {}}
+        onMouseOver={(e) => data.id === selectedId ? handlePaginationHover(true, e) : {}}
       >
         {
           isPagination && data.id === selectedId ?
             <div
-              onMouseOver={() => data.id === selectedId ? handlePaginationHover(true) : {}}
-              onMouseOut={() => data.id === selectedId ? handlePaginationHover(false) : {}}
+              onMouseOver={(e) => data.id === selectedId ? handlePaginationHover(true) : {}}
+              onMouseOut={(e) => data.id === selectedId ? handlePaginationHover(false) : {}}
               className="Next" onClick={() => handleScroll(data.id, 60)}>
               <img
                 className="right-scroll"
@@ -38,13 +38,15 @@ export default function TaskTracker({
           style={{ zIndex: "2" }}
           className={data.days.length >= 6
             ? ["track-habit", "track-habit-padding-lg"].join(" ")
-            : 'track-habit-limit'} ref={data.id === currentHabitId ? scrollRef : null}>
+            : 'track-habit-limit'}
+          ref={data.id === currentHabitId ? scrollRef : null}>
           {
             data.days && data.days.map(val => (
               <span
                 className="progress-icon"
                 key={val.value}
-                title={val.goalDate ? parseDate(val.goalDate, true, true) : "No Date Available"}>
+                title={val.goalDate ? parseDate(val.goalDate, true, true) : "No Date Available"}
+              >
                 {val.value == 1 ? "" :
                   <span
                     className={val.checked
@@ -121,6 +123,7 @@ export default function TaskTracker({
           margin-top: -1em;
           color: rgba(0,0,0,0.5);
           position: relative;
+          z-index: 3;
         }
 
         .Next {
@@ -162,7 +165,7 @@ export default function TaskTracker({
 
         .track-habit::-webkit-scrollbar {
           width: 5px;
-          height: 4px;
+          height: 10px;
           background:rgba(255,255,255,0.7);
         }
         
